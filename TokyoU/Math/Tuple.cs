@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace TokyoU.Math
 {
@@ -116,12 +117,39 @@ namespace TokyoU.Math
             return newTuple;
         }
 
+        public static explicit operator Tuple<T1, T2>(Tuple<Object, Object> tuple)
+        {
+            Tuple<T1,T2> newTuple = new Tuple<T1,T2>();
+            newTuple.Key = (T1) tuple.Key;
+            newTuple.Val = (T2) tuple.Val;
+            return newTuple;
+        }
         public static explicit operator Vector<T1>(Tuple<T1, T2> tuple)
         {
             T1[] arr = new[] {(T1)tuple.Key, (T1)(dynamic)tuple.Val};
             return new Vector<T1>(arr);
         }
-        
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj.GetType() == typeof(Tuple<T1, T2>))
+            {
+                Tuple<T1, T2> tuple = (Tuple<T1, T2>) obj;
+                if (tuple.Key.Equals(Key) && tuple.Val.Equals(Val))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            //当心，hash值可变。当用于哈希相关的容器后，值千万别变。
+            return Key.GetHashCode() + Val.GetHashCode();
+        }
+
         //为Tuple生成Hash表
         public static Hashtable CreateHashMap(List<Tuple<Object, Object>> tuples)
         {
@@ -133,5 +161,7 @@ namespace TokyoU.Math
             
             return hashtable;
         }
+        
+        
     }
 }

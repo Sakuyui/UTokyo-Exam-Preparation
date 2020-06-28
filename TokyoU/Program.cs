@@ -34,7 +34,35 @@ namespace TokyoU
             Console.WriteLine(Utils.ListToString(tuples));
             
             Vector<int> vector1 = new Vector<int>(new []{1,2,3,4,5,6,7,8});
+            vector1.Delete(0);
+            vector1.Insert(0,0);
+            vector1.Insert(9,-1);
+            Console.WriteLine(vector1._T());
             Console.WriteLine(vector1);
+            Vector<double> vector2 = new Vector<double>(new []{1.1,2.2,3.3});
+            Vector<int> vector3 = new Vector<int>(new []{1,2,3});
+            Console.WriteLine(vector2*vector3);
+            Console.WriteLine(vector2+vector3);
+            Console.WriteLine(vector2-vector3);
+            Console.WriteLine(vector2/vector3);
+            Console.WriteLine(vector2._T()*vector3);
+            Console.WriteLine(vector2.CompareTo(vector3));
+            Console.WriteLine((vector2*vector3).Map( (o => (dynamic)o+100)));
+            Console.WriteLine((vector2*vector3).L2_Distance(vector2+vector3));
+            Console.WriteLine((vector2*vector3).L1_Distance(vector2+vector3));
+            Console.WriteLine(vector1*2.1);
+            Console.WriteLine(vector1.Sort(delegate(object obj1, object obj2)
+            {
+                if ((dynamic) obj1 < (dynamic) obj2)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+            }));
+            
             
         }
 
