@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TokyoU.Math;
 
 namespace TokyoU
 {
@@ -9,6 +10,9 @@ namespace TokyoU
     //Tuple
     //Vector
     //调度算法
+    //文件处理
+    //压缩算法
+    //信息论相关
     internal class Program
     {
         public static void Main(string[] args)
@@ -28,6 +32,10 @@ namespace TokyoU
             Console.WriteLine(tuple1.ConvertTo<double,int>());
             tuples.Sort();  //测试Sort()
             Console.WriteLine(Utils.ListToString(tuples));
+            
+            Vector<int> vector1 = new Vector<int>(new []{1,2,3,4,5,6,7,8});
+            Console.WriteLine(vector1);
+            
         }
 
 

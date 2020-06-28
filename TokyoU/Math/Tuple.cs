@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 
@@ -112,6 +114,24 @@ namespace TokyoU.Math
             newTuple.Key = tuple.Key;
             newTuple.Val = tuple.Val;
             return newTuple;
+        }
+
+        public static explicit operator Vector<T1>(Tuple<T1, T2> tuple)
+        {
+            T1[] arr = new[] {(T1)tuple.Key, (T1)(dynamic)tuple.Val};
+            return new Vector<T1>(arr);
+        }
+        
+        //为Tuple生成Hash表
+        public static Hashtable CreateHashMap(List<Tuple<Object, Object>> tuples)
+        {
+            Hashtable hashtable = new Hashtable();
+            foreach (var t in tuples)
+            {
+                hashtable.Add(t.Key,t);
+            }
+            
+            return hashtable;
         }
     }
 }
