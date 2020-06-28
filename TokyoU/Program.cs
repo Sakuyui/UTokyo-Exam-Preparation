@@ -63,7 +63,8 @@ namespace TokyoU
                 }
             }));
             
-            
+            Console.WriteLine(((Matrix<int>)vector1._T())._T());
+            Console.WriteLine(new Matrix<int>(5,5,1));
         }
 
 

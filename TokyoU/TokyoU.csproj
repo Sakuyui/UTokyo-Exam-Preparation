@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Math\Matrix.cs" />
     <Compile Include="Math\Tuple.cs" />
     <Compile Include="Math\Vector.cs" />
     <Compile Include="Program.cs" />

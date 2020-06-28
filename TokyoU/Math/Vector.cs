@@ -202,22 +202,37 @@ namespace TokyoU.Math
 
             return result;
         }
-        public static Vector<Object> operator *(Vector<T> t1, Vector<Object> t2)
+        public static Matrix<Object> operator *(Vector<T> t1, Vector<Object> t2)
         {
             if(t1.Count != t2.Count) throw new ArithmeticException("向量长度不匹配: " + t1.Count + " != " +t2.Count);
             
             if (t1.IsColumnMatrix ^ t2.IsColumnMatrix)
             {
-                Vector<Object> result = new Vector<object>(1);
-                if(t1.Count == 0) return new Vector<object>();
-                dynamic sum = (dynamic)t1[0]*(dynamic)t2[0];
-                for (int i = 1; i < t1.Count; i++)
+                if (!t1.IsColumnMatrix && t2.IsColumnMatrix)
                 {
-                    sum = sum +  ((dynamic)t1[i]*(dynamic)t2[i]);
-                    //Console.WriteLine("k="+((dynamic)t1[i]*(dynamic)t2[i]));
+                    Vector<Object> result = new Vector<object>(1);
+                    if(t1.Count == 0) return (Matrix<T>)(new Vector<object>());
+                    dynamic sum = (dynamic)t1[0]*(dynamic)t2[0];
+                    for (int i = 1; i < t1.Count; i++)
+                    {
+                        sum = sum +  ((dynamic)t1[i]*(dynamic)t2[i]);
+                        //Console.WriteLine("k="+((dynamic)t1[i]*(dynamic)t2[i]));
+                    }
+                    result[0] = sum;
+                    return (Matrix<Object>)result;
                 }
-                result[0] = sum;
-                return result;
+                else
+                {
+                    List<Vector<Object>> vectors = new List<Vector<object>>();
+                    for (int i = 0; i < t1.Count; i++)
+                    {
+                        Vector<Object> vector = t2 * t1[i];
+                        vectors.Add(vector);
+                    }
+
+                    return new Matrix<Object>(vectors);
+                }
+              
             }
             else
             {
@@ -227,7 +242,7 @@ namespace TokyoU.Math
                     result[i] = (dynamic) t1[i] * (dynamic)t2[i];
                 }
 
-                return result;
+                return (Matrix<Object>)result;
             }
             
         }
@@ -395,5 +410,24 @@ namespace TokyoU.Math
 
             return vector;
         }
+
+        public static explicit operator Matrix<T>(Vector<T> vector)
+        {
+            List<List<T>> list = new List<List<T>>();
+            if (!vector.IsColumnMatrix)
+            {
+                list.Add(vector.Data);
+            }
+            else
+            {
+                for (int i = 0; i < vector.Count; i++)
+                {
+                    List<T> l = new List<T>();
+                    l.Add(vector[i]);
+                    list.Add(l);
+                }
+            }
+            return new Matrix<T>(list);
+        } 
     }
 }
