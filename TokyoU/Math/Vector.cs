@@ -107,7 +107,23 @@ namespace TokyoU.Math
                 }
             }
         }
+
         
+        //选择某些维度重新构成向量。可以重复索引
+        public Vector<T> this[int[] Indexes]
+        {
+            get
+            {
+                Vector<T> vector = new Vector<T>(Indexes.Length);
+                for (int i = 0; i < Indexes.Length; i++)
+                {
+                    vector[i] = Data[Indexes[i]];
+                }
+
+                vector.IsColumnMatrix = IsColumnMatrix;
+                return vector;
+            }
+        }
         
         
         public override string ToString()
@@ -202,7 +218,7 @@ namespace TokyoU.Math
 
             return result;
         }
-        public static Matrix<Object> operator *(Vector<T> t1, Vector<Object> t2)
+        public static object operator *(Vector<T> t1, Vector<Object> t2)
         {
             if(t1.Count != t2.Count) throw new ArithmeticException("向量长度不匹配: " + t1.Count + " != " +t2.Count);
             
@@ -211,7 +227,7 @@ namespace TokyoU.Math
                 if (!t1.IsColumnMatrix && t2.IsColumnMatrix)
                 {
                     Vector<Object> result = new Vector<object>(1);
-                    if(t1.Count == 0) return (Matrix<T>)(new Vector<object>());
+                    if(t1.Count == 0) return new Vector<object>();
                     dynamic sum = (dynamic)t1[0]*(dynamic)t2[0];
                     for (int i = 1; i < t1.Count; i++)
                     {
@@ -242,7 +258,7 @@ namespace TokyoU.Math
                     result[i] = (dynamic) t1[i] * (dynamic)t2[i];
                 }
 
-                return (Matrix<Object>)result;
+                return result;
             }
             
         }
@@ -296,7 +312,21 @@ namespace TokyoU.Math
             }
             return newVec;
         }
+        public static explicit operator T(Vector<T> vector)
+        {
+            if (vector.Count == 1)
+            {
+                return vector[0];
+            }
 
+            throw new Exception();
+        }
+        public static explicit operator Vector<T>(T d)
+        {
+            Vector<T> vector = new Vector<T>(1);
+            vector[0] = d;
+            return vector;
+        }
         public static explicit operator Vector<T>(Vector<Object> vector)
         {
             if (vector == null) return null;
@@ -320,9 +350,9 @@ namespace TokyoU.Math
         {
             Vector<Object> v1 = this - vector;
             
-            return v1.Map((o => System.Math.Abs((dynamic) o))).Sum();
+            return v1.Map(((i,o) => System.Math.Abs((dynamic) o))).Sum();
         }
-        public delegate Object VectorMapFunction(T v);
+        public delegate Object VectorMapFunction(int index,T v);
 
         public Vector<Object> Map(VectorMapFunction vectorMapFunction)
         {
@@ -330,7 +360,7 @@ namespace TokyoU.Math
             if (vector == null) return null;
             for (int i = 0; i < vector.Count; i++)
             {
-                vector[i] = vectorMapFunction(Data[i]);
+                vector[i] = vectorMapFunction(i,Data[i]);
             }
 
             return vector;
