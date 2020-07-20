@@ -273,6 +273,8 @@ namespace TokyoU.Math
 
             return result;
         }
+        
+        
         /*比较与相等*/
         public delegate int VectorCompStrategy(Vector<Object> v1, Vector<Object> v2);
         public static VectorCompStrategy DefaultCompStrategy = delegate(Vector<object> v1, Vector<object> v2)

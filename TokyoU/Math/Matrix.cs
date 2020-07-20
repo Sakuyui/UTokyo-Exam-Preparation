@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Runtime.CompilerServices;
 
 namespace TokyoU.Math
 {
@@ -155,6 +157,36 @@ namespace TokyoU.Math
             get { return Datas[r][c]; }
             set { Datas[r][c] = value; }
         }
+
+        public Matrix<T> this[int rowFrom, int rowTo, int columnFrom, int columnTo]
+        {
+            get
+            {
+                return SubMatrix(rowFrom < 0 ? 0 : rowFrom,
+                    (rowTo < 0 || rowTo >= RowsCount) ? RowsCount - 1 : rowTo,
+                    columnFrom < 0 ? 0 : columnFrom, (columnTo < 0 || columnTo >= ColumnsCount) ? ColumnsCount - 1 : columnTo);
+            }
+            set
+            {
+                int rf = rowFrom < 0 ? 0 : rowFrom;
+                int rt = (rowTo < 0 || rowTo >= RowsCount) ? RowsCount - 1 : rowTo;
+                int cf = columnFrom < 0 ? 0 : columnFrom;
+                int ct = (columnTo < 0 || columnTo >= ColumnsCount) ? ColumnsCount - 1 : columnTo;
+                Matrix<T> mat = value;
+                if (mat.RowsCount != rt - rf + 1 || mat.ColumnsCount != ct - cf + 1)
+                {
+                    throw new ArithmeticException(rf+","+rt+","+cf+","+ct+" not match "+mat.Shape);
+                }
+
+                for (int i = rf; i <= rt; i++)
+                {
+                    for (int j = cf; j <= ct; j++)
+                    {
+                        Datas[i][j] = mat[i - rf, j - cf];
+                    }
+                }
+            }
+        }
         //选择某些行以及某些列，索引可重复
         public Matrix<T> this[int[] rowsIndexes, int[] columnsIndexes]
         {
@@ -178,9 +210,51 @@ namespace TokyoU.Math
   
         public void AddARow(T[] row, int index = -1)
         {
-            
+            if (row.Length != this.Shape.Val)
+            {
+                throw new ArithmeticException();
+            }
+            else
+            {
+                List<T> newRow = new List<T>(row);
+                if (index < 0)
+                {
+                    //默认插在最尾
+                    this.Datas.Add(newRow);
+                }
+                else
+                {
+                    this.Datas.Insert(index,newRow);
+                }
+            }
         }
 
+        public void AddColumn(T[] column, int index = -1)
+        {
+            if (column.Length != this.Shape.Key)
+            {
+                throw new ArithmeticException();
+            }
+            else
+            {
+                List<T> newColumn = new List<T>(column);
+                if (index < 0)
+                {
+                    //默认插在最尾
+                    for (int i = 0; i < RowsCount; i++)
+                    {
+                        Datas[i].Add(newColumn[i]);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < RowsCount; i++)
+                    {
+                        Datas[i].Insert(index,newColumn[i]);
+                    }
+                }
+            }
+        }
 
 
         public Matrix<T> SubMatrix(int rowTop, int rowBottom, int columnLeft, int columnRight)
@@ -321,6 +395,65 @@ namespace TokyoU.Math
             return m;
         }
 
+        
+        public static Matrix<Object> operator + (Matrix<T> matrix1, Matrix<Object> matrix2)
+        {
+            if (!matrix1.Shape.Equals(matrix2.Shape))
+            {
+                throw new ArithmeticException();
+            }
+            Matrix<T> m = new Matrix<T>(matrix1.RowsCount,matrix1.ColumnsCount);
+            for (int i = 0; i < (int)m.Shape[0]; i++)
+            {
+                for (int j = 0; j < (int) m.Shape[1]; j++)
+                {
+                    m[i, j] = (dynamic)matrix1[i, j] + (dynamic)matrix2[i,j];
+                }
+            }
+
+            return m;
+        }
+        
+        public static Matrix<Object> operator - (Matrix<T> matrix1, Matrix<Object> matrix2)
+        {
+            if (!matrix1.Shape.Equals(matrix2.Shape))
+            {
+                throw new ArithmeticException();
+            }
+            Matrix<T> m = new Matrix<T>(matrix1.RowsCount,matrix1.ColumnsCount);
+            for (int i = 0; i < (int)m.Shape[0]; i++)
+            {
+                for (int j = 0; j < (int) m.Shape[1]; j++)
+                {
+                    m[i, j] = (dynamic)matrix1[i, j] - (dynamic)matrix2[i,j];
+                }
+            }
+
+            return m;
+        }
+        
+        public static Matrix<Object> operator * (Matrix<T> matrix1, Matrix<Object> matrix2)
+        {
+            if (!matrix1.Shape.Val.Equals(matrix2.Shape.Key))
+            {
+                throw new ArithmeticException(""+matrix1.Shape+"*"+matrix2.Shape);
+            }
+           
+            Matrix<T> m = new Matrix<T>(matrix1.RowsCount,matrix2.ColumnsCount);
+            for (int i = 0; i < (int)matrix1.Shape[0]; i++)
+            {
+                Vector<Object> vec = new Vector<T>(matrix2.ColumnsCount); 
+                for (int j = 0; j < (int) matrix1.Shape[1]; j++)
+                {
+                    vec = vec + matrix2.iloc(j,j , 0)[0] * matrix1[i,j] ;
+                }
+
+                m[i, i, -1, -1] = (Matrix<T>)(Matrix<Object>)vec;
+            }
+
+            return m;
+        }
+        
         public override int GetHashCode()
         {
             int hash = 0;
@@ -416,6 +549,24 @@ namespace TokyoU.Math
                 }
                 return maxes;
             }
+        }
+
+        public Matrix<Object> Multiply(Matrix<Object> matrix)
+        {
+            if (!matrix.Shape.Equals(Shape))
+            {
+                throw new ArithmeticException();
+            }
+            Matrix<T> m = new Matrix<T>(RowsCount,ColumnsCount);
+            for (int i = 0; i < (int)m.Shape[0]; i++)
+            {
+                for (int j = 0; j < (int) m.Shape[1]; j++)
+                {
+                    m[i, j] = (dynamic)this[i, j] * (dynamic)matrix[i,j];
+                }
+            }
+
+            return m;
         }
         public Vector<T> Min(int axis = -1)
         {

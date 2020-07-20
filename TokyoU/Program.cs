@@ -76,6 +76,7 @@ namespace TokyoU
             //子矩阵
             Matrix<int> matrix1 = new Matrix<int>(5, 5, 1).SubMatrix(1, 2, 1, 2);
             Console.WriteLine(matrix1);
+            
             //Map测试
             Console.WriteLine(matrix1.Map((r, c, o) => o +" 惹-("+r+","+c+")" ));
         }
