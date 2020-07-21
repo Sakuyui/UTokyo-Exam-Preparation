@@ -74,24 +74,25 @@ namespace TokyoU.Math
             }
 
             int x = vectors[0].Count;
-            bool sameVectorType = vectors[0].IsColumnMatrix;
+            bool vectorType = vectors[0].IsColumnMatrix;
             for (int i = 1; i < vectors.Count; i++)
             {
-                x = x ^ vectors[i].Count;
-                sameVectorType = sameVectorType ^ vectors[i].IsColumnMatrix;
-                if (x != 0 || sameVectorType) throw new Exception();
+                if(x != vectors[i].Count || vectorType!= vectors[i].IsColumnMatrix)  throw new Exception();;
+               
             }
             //初始化
             this.ColumnsSize = vectors[0].Count;
             this.RowSize = vectors.Count;
             Datas = new List<List<T>>();
           
+            
+            //如果是行矩阵，将所有行添加
             for (int i = 0; i < RowSize; i++)
             {
                 Datas.Add(new List<T>(vectors[i].Data.ToArray())); 
             }
 
-            if (!vectors[0].IsColumnMatrix)
+            if (vectors[0].IsColumnMatrix)
             {
                 Matrix<T> matrix = this._T();
                 this.Datas = matrix.Datas;
@@ -162,9 +163,11 @@ namespace TokyoU.Math
         {
             get
             {
-                return SubMatrix(rowFrom < 0 ? 0 : rowFrom,
-                    (rowTo < 0 || rowTo >= RowsCount) ? RowsCount - 1 : rowTo,
-                    columnFrom < 0 ? 0 : columnFrom, (columnTo < 0 || columnTo >= ColumnsCount) ? ColumnsCount - 1 : columnTo);
+                int rf = rowFrom < 0 ? 0 : rowFrom;
+                int rt = (rowTo < 0 || rowTo >= RowsCount) ? RowsCount - 1 : rowTo;
+                int cf = columnFrom < 0 ? 0 : columnFrom;
+                int ct = (columnTo < 0 || columnTo >= ColumnsCount) ? ColumnsCount - 1 : columnTo;
+                return SubMatrix(rf, rt,cf,ct);
             }
             set
             {
@@ -260,6 +263,7 @@ namespace TokyoU.Math
         public Matrix<T> SubMatrix(int rowTop, int rowBottom, int columnLeft, int columnRight)
         {
             List<Vector<T>> vectors = iloc(rowTop, rowBottom);
+            
             List<int> indexes = new List<int>();
             for (int i = columnLeft; i <= columnRight; i++)
             {
@@ -269,6 +273,7 @@ namespace TokyoU.Math
             for (int i = 0; i < vectors.Count; i++)
             {
                 vectors[i] = vectors[i][indexes.ToArray()];
+                
             }
 
             return new Matrix<T>(vectors);
@@ -302,6 +307,7 @@ namespace TokyoU.Math
                     Vector<T> vector = new Vector<T>(Datas[i].ToArray());
                     vector.IsColumnMatrix = false;
                     vectors.Add(vector);
+                   
                 }
             }
             else
@@ -402,7 +408,7 @@ namespace TokyoU.Math
             {
                 throw new ArithmeticException();
             }
-            Matrix<T> m = new Matrix<T>(matrix1.RowsCount,matrix1.ColumnsCount);
+            Matrix<Object> m = new Matrix<Object>(matrix1.RowsCount,matrix1.ColumnsCount);
             for (int i = 0; i < (int)m.Shape[0]; i++)
             {
                 for (int j = 0; j < (int) m.Shape[1]; j++)
@@ -413,14 +419,19 @@ namespace TokyoU.Math
 
             return m;
         }
-        
+        public static Matrix<Object> operator + (Matrix<T> matrix1, Object val)
+        {
+            Matrix<Object> mat = new Matrix<object>(matrix1.Shape.Key,matrix1.Shape.Val,val);
+            
+            return matrix1 + mat;
+        }
         public static Matrix<Object> operator - (Matrix<T> matrix1, Matrix<Object> matrix2)
         {
             if (!matrix1.Shape.Equals(matrix2.Shape))
             {
                 throw new ArithmeticException();
             }
-            Matrix<T> m = new Matrix<T>(matrix1.RowsCount,matrix1.ColumnsCount);
+            Matrix<Object> m = new Matrix<Object>(matrix1.RowsCount,matrix1.ColumnsCount);
             for (int i = 0; i < (int)m.Shape[0]; i++)
             {
                 for (int j = 0; j < (int) m.Shape[1]; j++)
@@ -431,6 +442,7 @@ namespace TokyoU.Math
 
             return m;
         }
+        
         
         public static Matrix<Object> operator * (Matrix<T> matrix1, Matrix<Object> matrix2)
         {
@@ -448,7 +460,7 @@ namespace TokyoU.Math
                     vec = vec + matrix2.iloc(j,j , 0)[0] * matrix1[i,j] ;
                 }
 
-                m[i, i, -1, -1] = (Matrix<T>)(Matrix<Object>)vec;
+                m[i, i, -1, -1] = ((Matrix<T>)(Matrix<Object>)vec)._T();
             }
 
             return m;
@@ -557,7 +569,7 @@ namespace TokyoU.Math
             {
                 throw new ArithmeticException();
             }
-            Matrix<T> m = new Matrix<T>(RowsCount,ColumnsCount);
+            Matrix<Object> m = new Matrix<Object>(RowsCount,ColumnsCount);
             for (int i = 0; i < (int)m.Shape[0]; i++)
             {
                 for (int j = 0; j < (int) m.Shape[1]; j++)

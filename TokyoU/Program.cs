@@ -79,6 +79,10 @@ namespace TokyoU
             
             //Map测试
             Console.WriteLine(matrix1.Map((r, c, o) => o +" 惹-("+r+","+c+")" ));
+            
+            //索引子矩阵测试
+            Console.WriteLine((new Matrix<int>(5, 5, 1))[2,-1,1,-1]);
+            Console.WriteLine(matrix1.Multiply(matrix1 + 1.2));
         }
         
         public static void Main(string[] args)
