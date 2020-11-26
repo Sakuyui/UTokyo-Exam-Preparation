@@ -9,34 +9,35 @@ namespace TokyoU.Math
     public class Matrix<T> : ICloneable
     {
         public List<List<T>> Datas;
-        public int RowsCount { 
-            get {
-                if (Datas == null) return 0;
-                return Datas.Count;
-            }
-        }
+        public int RowsCount => Datas?.Count ?? 0;
 
         public int ColumnsSize = 0; //列数
         public int RowSize = 0; //行数
 
-        public Tuple<int, int> Shape
-        {
-            get{return new Tuple<int, int>(RowsCount,ColumnsCount);}
-        }
+        public Tuple<int, int> Shape => new Tuple<int, int>(RowsCount,ColumnsCount);
+
         public int ColumnsCount
         {
             get
             {
                 if (Datas == null) return 0;
-                if (Datas.Count != 0) return Datas[0].Count;
-                return ColumnsSize;
+                return Datas.Count != 0 ? Datas[0].Count : ColumnsSize;
             }
-            set
-            {
-                ColumnsSize = value;
-            }
+            set => ColumnsSize = value;
         }
 
+        public Matrix(IReadOnlyList<T[]> datas)
+        {
+            if(datas == null) throw new Exception();
+            RowSize = datas.Count;
+            if (RowSize == 0) ColumnsSize = 0;
+            Datas = new List<List<T>>();
+            for (int i = 0; i < datas.Count; i++)
+            {
+                ColumnsSize = datas[i].Length;
+                Datas.Add(new List<T>(datas[i]));
+            }
+        }
         public Matrix(List<List<T>> datas)
         {
             if(datas == null) throw new Exception();
@@ -73,9 +74,9 @@ namespace TokyoU.Math
                 return;
             }
 
-            int x = vectors[0].Count;
-            bool vectorType = vectors[0].IsColumnMatrix;
-            for (int i = 1; i < vectors.Count; i++)
+            var x = vectors[0].Count;
+            var vectorType = vectors[0].IsColumnMatrix;
+            for (var i = 1; i < vectors.Count; i++)
             {
                 if(x != vectors[i].Count || vectorType!= vectors[i].IsColumnMatrix)  throw new Exception();;
                
@@ -133,6 +134,26 @@ namespace TokyoU.Math
 
             Datas = list;
         }
+
+        public delegate T ElementProcess(int i, int j, int e);
+        public Matrix(int rows, int columns, ElementProcess initAction)
+        {
+            RowSize = rows;
+            ColumnsSize = columns;
+            List<List<T>> list = new List<List<T>>();
+            for (int i = 0; i < rows; i++)
+            {
+                List<T> clist = new List<T>();
+                for (int j = 0; j < columns; j++)
+                {
+                    clist.Add(initAction(i, j, 0));
+                }
+                list.Add(clist);
+            }
+
+            Datas = list;
+        }
+        
 
         public override string ToString()
         {
@@ -276,6 +297,7 @@ namespace TokyoU.Math
                 
             }
 
+      
             return new Matrix<T>(vectors);
         }
         public Vector<T> Dense()
@@ -289,9 +311,14 @@ namespace TokyoU.Math
                 }
             }
 
+            
             vector.IsColumnMatrix = false;
             return vector;
         }
+
+
+        
+        
         /*选择行/列*/
         //默认选择行
         public List<Vector<T>> iloc(int from, int to, int axis = 0)
