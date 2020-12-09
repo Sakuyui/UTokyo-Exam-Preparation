@@ -1,17 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace TokyoU.os.Cache
+namespace TokyoU.os.Cache.ReplaceStrategies
 {
-    public class LfuCache<TK, TV> : AbstractCache<TK, TV> 
+    public class CacheLfuStrategy<TK,TV> : BaseCacheStrategy<TK,TV>
     {
         private readonly OrderedDictionary _frequentSetMap= new OrderedDictionary();
         private readonly OrderedDictionary _keyFrequentMap= new OrderedDictionary();
-        
-        public override TV Access(TK key)
+
+       
+
+        public override object DoAccess(TK key, AbstractCache<TK, TV> cache, OrderedDictionary cacheLines)
         {
-            if (!CacheLines.Contains(key))
+            if (!cacheLines.Contains(key))
             {
                 LineMiss?.Invoke(this, key, null);
                 return default;
@@ -19,7 +20,7 @@ namespace TokyoU.os.Cache
             else
             {
               
-                var c = CacheLines[key]; //根据key直接获取内容
+                var c = cacheLines[key]; //根据key直接获取内容
                 var freq = (int) _keyFrequentMap[key];  //根据k获取频率
                 ((List<TK>) _frequentSetMap[freq]).Remove(key); //从该频率集合中删除key
                 //key转移到下一频率
@@ -37,14 +38,14 @@ namespace TokyoU.os.Cache
             }
         }
 
-        public override void Write(TK key, TV val)
+        public override object DoWrite(TK key, TV val, AbstractCache<TK, TV> cache, OrderedDictionary cacheLines)
         {
-            if (!CacheLines.Contains(key))
+            if (!cacheLines.Contains(key))
             {
-                if (Size < Capacity)
+                if (cacheLines.Count < cache.Capacity)
                 {
                     _keyFrequentMap[key] = 1;
-                    CacheLines.Add(key, val);
+                    cacheLines.Add(key, val);
                     //key加入频率列表
                     if (_frequentSetMap.Contains(1))
                     {
@@ -64,11 +65,11 @@ namespace TokyoU.os.Cache
                         if (list.Count <= 0) continue;
                         //替换出一个元素
                         _keyFrequentMap.Remove(list[0]);
-                        CacheLines.Remove(list[0]);
+                        cacheLines.Remove(list[0]);
                         list.RemoveAt(0);
                         //插入新元素
                         _keyFrequentMap[key] = 1;
-                        CacheLines.Add(key, val);
+                        cacheLines.Add(key, val);
                         //key加入频率列表
                         if (_frequentSetMap.Contains(1))
                         {
@@ -85,15 +86,11 @@ namespace TokyoU.os.Cache
             else
             {
                 //存在key的情况
-                Access(key);
-                CacheLines[key] = val;
+                DoAccess(key, cache,  cacheLines);
+                cacheLines[key] = val;
             }
-        }
 
-
-        public LfuCache(int capacity, CacheEvent lineMiss = null, CacheEvent lineReplaced = null, CacheEvent lineAccess = null) 
-            : base(capacity, lineMiss, lineReplaced, lineAccess)
-        {
+            return cache;
         }
     }
 }

@@ -19,6 +19,10 @@ namespace TokyoU
     //压缩算法
     //位运算。比如bitmap
     //信息论相关
+    //图像相关，分割区域，区域填充等。
+    /// <summary>
+    /// 像素、近邻、边界、区域操作
+    /// </summary>
     internal class Program
     {
         
@@ -143,7 +147,8 @@ namespace TokyoU
             //AlgorithmP.GetTopK(new []{25,36,4,55,71,18,0,71,89,65},3);
             //AdvanceStructureTest.CacheTest();
             //AdvanceStructureTest.DictionaryTest();    
-            CounterTest();
+            //CounterTest();
+            AdvanceStructureTest.IndexKeepTableTest();
             return;
             TupleTest();
             MatrixAndVectorTest();

@@ -6,6 +6,7 @@ using TokyoU.os;
 using TokyoU.os.Cache;
 using TokyoU.Structure;
 
+
 namespace TokyoU
 {
     public class AdvanceStructureTest
@@ -26,6 +27,18 @@ namespace TokyoU
         {
            
         }
+
+
+        public static void IndexKeepTableTest()
+        {
+            var list = new List<int>(new int[]{4,11,4,2,1,7,5,91,23,5,44});
+            var table = new IndexKeepTable<int>(list);
+            var stable = table.SortData(true);
+            foreach (var x in stable.nodes)
+            {
+                Console.Write(x.Data + "[" + x.SourceIndex + "] ");
+            }
+        }
         
         public static void CacheTest()
         {
@@ -41,8 +54,9 @@ namespace TokyoU
                 Console.WriteLine(e);
             }
             Console.WriteLine("\n");
-            LruCache<int,int> lruCache = new LruCache<int, int>(5,null,
-                delegate(object source, object key, object content) { Console.WriteLine(key + " be replaced");return null; });
+            CommonCache<int, int> lruCache = CacheBuilder.BuildLruCommonCache<int, int>(5);
+                // new LruCache<int, int>(5,null,
+              //  delegate(object source, object key, object content) { Console.WriteLine(key + " be replaced");return null; });
             lruCache.Write(4,0);
             lruCache.Write(7,0);
             lruCache.Write(0,0);
