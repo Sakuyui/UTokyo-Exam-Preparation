@@ -6,6 +6,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Policy;
 using TokyoU.Math;
+using TokyoU.Structure;
+using TokyoU.Test;
 
 namespace TokyoU
 {
@@ -148,7 +150,9 @@ namespace TokyoU
             //AdvanceStructureTest.CacheTest();
             //AdvanceStructureTest.DictionaryTest();    
             //CounterTest();
-            AdvanceStructureTest.IndexKeepTableTest();
+            //AdvanceStructureTest.IndexKeepTableTest();
+            FileSysTest.TestReadFile();
+            CollectionHelper.Test();
             return;
             TupleTest();
             MatrixAndVectorTest();

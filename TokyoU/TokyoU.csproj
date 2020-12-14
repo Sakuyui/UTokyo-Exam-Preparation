@@ -44,27 +44,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgorithmP.cs" />
+    <Compile Include="FileSystem\FileSysHelper.cs" />
     <Compile Include="Math\Counter.cs" />
     <Compile Include="Math\DataFrame.cs" />
     <Compile Include="Math\Matrix.cs" />
     <Compile Include="Math\Tuple.cs" />
     <Compile Include="Math\Vector.cs" />
-    <Compile Include="os\Cache\Cache.cs" />
-    <Compile Include="os\Cache\CacheBuilder.cs" />
-    <Compile Include="os\Cache\CommonCache.cs" />
-    <Compile Include="os\Cache\ReplaceStrategies\BaseCacheStrategy.cs" />
-    <Compile Include="os\Cache\ReplaceStrategies\CacheCustomStrategy.cs" />
-    <Compile Include="os\Cache\ReplaceStrategies\CacheFIFOStrategy.cs" />
-    <Compile Include="os\Cache\ReplaceStrategies\CacheLFUStrategy.cs" />
-    <Compile Include="os\Cache\ReplaceStrategies\CacheLRUStrategy.cs" />
+    <Compile Include="OS\Cache\Cache.cs" />
+    <Compile Include="OS\Cache\CacheBuilder.cs" />
+    <Compile Include="OS\Cache\CommonCache.cs" />
+    <Compile Include="OS\Cache\ReplaceStrategies\BaseCacheStrategy.cs" />
+    <Compile Include="OS\Cache\ReplaceStrategies\CacheCustomStrategy.cs" />
+    <Compile Include="OS\Cache\ReplaceStrategies\CacheFIFOStrategy.cs" />
+    <Compile Include="OS\Cache\ReplaceStrategies\CacheLFUStrategy.cs" />
+    <Compile Include="OS\Cache\ReplaceStrategies\CacheLRUStrategy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Structure\Automata\Automata.cs" />
+    <Compile Include="Structure\CollectionHelper.cs" />
     <Compile Include="Structure\Comparer.cs" />
     <Compile Include="Structure\DisJointSet.cs" />
+    <Compile Include="Structure\Graph.cs" />
     <Compile Include="Structure\IndexKeepTable.cs" />
     <Compile Include="Structure\SlideWindow.cs" />
-    <Compile Include="Test.cs" />
+    <Compile Include="Test\AdvanceStructureTest.cs" />
+    <Compile Include="Test\FileSysTest.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

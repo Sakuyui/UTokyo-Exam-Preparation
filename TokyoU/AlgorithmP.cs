@@ -38,6 +38,9 @@ namespace TokyoU
 
         
 
+        
+        
+        
    
         
         //背包问题的三种解法
@@ -64,15 +67,17 @@ namespace TokyoU
         {
             //回溯法第一步：判断是否到叶子节点
             var max = curMax;
-            var flag = w.Where((t, i) => !vis[i] && t < capacity).Any();
-            if (!flag) return max; //到达叶子
+            var flag = w.Where((t, i) => !vis[i] && t < capacity).Any();  //如果还存在未遍历过的
+            
+            if (!flag) return max; //到达叶子,不存在任何没遍历过的了
             
             //遍历未遍历的子树
-            for (int i = 0; i < w.Length; i++)
+            for (var i = 0; i < w.Length; i++)
             {
-                if (vis[i] || w[i] > capacity) continue;
+                if (vis[i] || w[i] > capacity) continue; //找到一个未访问过的元素
                 //找到一个未遍历的子节点
                 vis[i] = true; //标记
+                //开始向下搜索惹
                 max =  System.Math.Max(BagReturn(w, v, capacity - w[i], vis, max), max);
                 vis[i] = false; //清除标记
             }
@@ -92,5 +97,57 @@ namespace TokyoU
 
             return 0;
         }
+
+
+        
+        //二分搜索模板
+        public static int BinarySearch(int[] nums, int target)
+        {
+            var left = 0;
+            var right = nums.Length - 1;
+            while (left <= right)
+            {
+                var mid = (right - left) / 2 + left;
+                if (nums[mid] == target)
+                {
+                    return mid;
+                }
+                else if(nums[mid] < target)
+                {
+                    left = mid + 1;
+                }else if (nums[mid] > target)
+                {
+                    right = mid - 1;
+                }
+            }
+
+            return -1;
+        }
+
+        public static int BoundLeftBinarySearch(int[] nums, int target)
+        {
+            var left = 0;
+            var right = nums.Length; //使用开区间
+            while (left < right) //右闭区间需要用<
+            {
+                var mid = left + (right - left) / 2;
+                if (nums[mid] == target)
+                {
+                    right = mid;
+                }else if (nums[mid] < target)
+                {
+                    left = mid + 1;
+                }else if (nums[mid] > target)
+                {
+                    right = mid;
+                }
+            }
+
+            return left;
+        }
+
+
+
+       
     }
 }

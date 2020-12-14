@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using TokyoU.os;
 using TokyoU.os.Cache;
 using TokyoU.Structure;
 
-
-namespace TokyoU
+namespace TokyoU.Test
 {
-    public class AdvanceStructureTest
+    public static class AdvanceStructureTest
     {
         public static void DictionaryTest()
         {

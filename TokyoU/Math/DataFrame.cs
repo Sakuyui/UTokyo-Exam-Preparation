@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 
 namespace TokyoU.Math
 {
     public class DataFrame
     {
-        
+      
         private List<string> _columnNames;
         public List<string> ColumnNames
         {
@@ -81,6 +80,7 @@ namespace TokyoU.Math
             {
                 map[t.Key] = t.Val;
             }
+            AddNewRow(map);
         }
         public void AddNewColumn(string cName, object fill = null)
         {
@@ -90,6 +90,16 @@ namespace TokyoU.Math
             }
         }
 
+        public delegate object MapFunction(int index, Serial s);
+
+        public void AddNewColumn(string cName, MapFunction mapFunction)
+        {
+            for (var i = 0; i < Serials.Count; i++)
+            {
+                var s = Serials[i];
+                s[cName] = mapFunction(i, s);
+            }
+        }
         public Serial this[int index]
         {
             get => (index < Serials.Count) ? Serials[index] : null;
@@ -125,7 +135,6 @@ namespace TokyoU.Math
 
     public class Serial
     {
-        
         public Dictionary<string, object> DataMap {get; private set; } = new Dictionary<string, object>();
         public List<string> ColumnNames => DataMap.Keys.ToList();
         public List<object> Values => DataMap.Values.ToList();
