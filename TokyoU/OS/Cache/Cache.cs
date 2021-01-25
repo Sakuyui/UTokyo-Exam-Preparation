@@ -35,8 +35,8 @@ namespace TokyoU.os.Cache
 
         public abstract TV Access(TK key);   //访问某个页
         public abstract void Write(TK key, TV val);  //加入一个新的页面 相当于提供 （页号，对应页内容）
-        
-        
+
+
         
     }
 

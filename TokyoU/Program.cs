@@ -6,7 +6,9 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Policy;
 using TokyoU.Math;
+using TokyoU.OS;
 using TokyoU.Structure;
+using TokyoU.Structure.Graph;
 using TokyoU.Test;
 
 namespace TokyoU
@@ -88,6 +90,9 @@ namespace TokyoU
                 }
             }));
             
+            
+            
+            
             Console.WriteLine(((Matrix<int>)vector1._T())._T());
             Console.WriteLine(new Matrix<int>(5,5,1));
             Console.WriteLine((Vector<int>)( ((Matrix<int>)vector1._T())));
@@ -100,7 +105,7 @@ namespace TokyoU
             
             //索引子矩阵测试
             Console.WriteLine((new Matrix<int>(5, 5, 1))[1,-1,1,-1]);
-            Console.WriteLine(matrix1.Multiply(matrix1 + 1.2));
+            Console.WriteLine(matrix1.DotMultiply(matrix1 + 1.2));
         }
 
 
@@ -146,13 +151,27 @@ namespace TokyoU
         }
         public static void Main(string[] args)
         {
+            var nums = new[] {4, 4, 2, 45, 5, 1, 44, 28};
+            nums.ToMatrix(2,4).PrintToConsole();
+            nums.GroupBy(e => e)
+                .Select(e => new Math.Tuple<int, double>(e.Key,e.Count() / (double)(nums.Length)))
+                .PrintEnumerationToConsole();
+            //GraphTest.Test();
+            PriorityQueueTest.Test();
+            //DataFrameTest.Test();
+            //DisJointSetTest.Test();
+            //MemoryCacheTest.Test();
+            //var m = nums.Select(e => e).MinBy(e => e - 10);
+            //Console.WriteLine(m);
+            MatrixTest.Test();
+
             //AlgorithmP.GetTopK(new []{25,36,4,55,71,18,0,71,89,65},3);
             //AdvanceStructureTest.CacheTest();
             //AdvanceStructureTest.DictionaryTest();    
             //CounterTest();
             //AdvanceStructureTest.IndexKeepTableTest();
-            FileSysTest.TestReadFile();
-            CollectionHelper.Test();
+            //FileSysTest.TestReadFile();
+            //CollectionHelper.Test();
             return;
             TupleTest();
             MatrixAndVectorTest();

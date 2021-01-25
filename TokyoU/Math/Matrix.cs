@@ -1,12 +1,56 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
+using TokyoU.ImageProcess;
 
 namespace TokyoU.Math
 {
-    public class Matrix<T> : ICloneable
+
+
+    public class MatrixTest
+    {
+        public static void Test()
+        {
+            
+            var matrix = new Matrix<int>(Utils.CreateTwoDimensionList(new int[12]
+            {
+                1,2,3,4,
+                5,6,7,8,
+                9,10,11,12
+            },4,3));
+            matrix[1][0].PrintToConsole();
+            
+            ("max = " + matrix.Max(e => e.Max(p => p))).PrintToConsole();
+            
+            //dense
+            matrix.Aggregate((e1, e2) => e1.Concat(e2).ToList()).PrintEnumerationToConsole();
+            
+            matrix.PrintToConsole();
+            matrix.Iloc(0, 1).PrintEnumerationToConsole();
+            //matrix[-1,-1,0,1].PrintToConsole();
+            matrix[2] -= (dynamic) new Vector<int>(1,6,2);
+            matrix[1] += (dynamic) 10;
+            matrix.PrintToConsole();
+            matrix.Reverse180();
+            matrix.PrintToConsole();
+           // matrix.ColumnsEnumerator.Select(e => e.Max()).PrintEnumerationToConsole();
+            //matrix.RowsEnumerator.Select(e => e.Max()).PrintEnumerationToConsole();
+            
+            Matrix<int> filter = new Matrix<int>(Utils.CreateTwoDimensionList(new []
+            {
+                1, 0, 1,
+                0, 5, 0,
+                1, 0, 1
+            },3,3));
+            //平均
+           // matrix.RowsEnumerator.Select(e => e.Sum() / e.Count).PrintEnumerationToConsole();
+           ImageFilter.ApplyEqualWithConvolutionToImage(matrix, filter);
+        }
+    }
+    public class Matrix<T> : ICloneable, IEnumerable<List<T>>
     {
         public List<List<T>> Datas;
         public int RowsCount => Datas?.Count ?? 0;
@@ -14,8 +58,37 @@ namespace TokyoU.Math
         public int ColumnsSize = 0; //列数
         public int RowSize = 0; //行数
 
-        public Tuple<int, int> Shape => new Tuple<int, int>(RowsCount,ColumnsCount);
+        private Tuple<int, int> Shape => new Tuple<int, int>(RowsCount,ColumnsCount);
 
+
+        public IEnumerable<List<T>> ColumnsEnumerator
+        {
+            get
+            {
+                for(var i = 0; i <  ColumnsSize; i++)
+                {
+                    var col = Datas.Select(e => e[i]).ToList();
+                    yield return col;
+                }
+            }
+        }
+        public IEnumerable<List<T>> RowsEnumerator
+        {
+            get
+            {
+                for(var i = 0; i <  RowSize; i++)
+                {
+                    yield return Datas[i];
+                }
+            }
+        }
+
+        public IEnumerable<T> ElementEnumerator
+        {
+            get { return Datas.SelectMany(r => r); }
+        }
+        
+        
         public int ColumnsCount
         {
             get
@@ -26,33 +99,33 @@ namespace TokyoU.Math
             set => ColumnsSize = value;
         }
 
-        public Matrix(IReadOnlyList<T[]> datas)
+        public Matrix(IReadOnlyCollection<T[]> datas)
         {
             if(datas == null) throw new Exception();
             RowSize = datas.Count;
             if (RowSize == 0) ColumnsSize = 0;
             Datas = new List<List<T>>();
-            for (int i = 0; i < datas.Count; i++)
+            foreach (var t in datas)
             {
-                ColumnsSize = datas[i].Length;
-                Datas.Add(new List<T>(datas[i]));
+                ColumnsSize = t.Length;
+                Datas.Add(new List<T>(t));
             }
         }
-        public Matrix(List<List<T>> datas)
+        public Matrix(IReadOnlyList<List<T>> datas)
         {
             if(datas == null) throw new Exception();
             RowSize = datas.Count;
             if (RowSize == 0) ColumnsSize = 0;
             Datas = new List<List<T>>();
-            for (int i = 0; i < datas.Count; i++)
+            foreach (var t in datas)
             {
-                ColumnsSize = datas[i].Count;
-                Datas.Add(new List<T>(datas[i].ToArray()));
+                ColumnsSize = t.Count;
+                Datas.Add(new List<T>(t.ToArray()));
             }
         }
 
         //从向量创建矩阵
-        public Matrix(List<Vector<T>> vectors)
+        public Matrix(IReadOnlyList<Vector<T>> vectors)
         {
             //Check
             //If all the shape of the vectors are the same. And if all vector is row/column vector.
@@ -93,22 +166,20 @@ namespace TokyoU.Math
                 Datas.Add(new List<T>(vectors[i].Data.ToArray())); 
             }
 
-            if (vectors[0].IsColumnMatrix)
-            {
-                Matrix<T> matrix = this._T();
-                this.Datas = matrix.Datas;
-                this.ColumnsSize = matrix.ColumnsSize;
-                this.RowSize = matrix.RowSize;
-            }
-            
-            
+            if (!vectors[0].IsColumnMatrix) return;
+            var matrix = this._T();
+            this.Datas = matrix.Datas;
+            this.ColumnsSize = matrix.ColumnsSize;
+            this.RowSize = matrix.RowSize;
+
+
         }
         public Matrix<T> _T()
         {
-            Matrix<T> result = new Matrix<T>(ColumnsSize, RowSize);
-            for (int i = 0; i < RowSize; i++)
+            var result = new Matrix<T>(ColumnsSize, RowSize);
+            for (var i = 0; i < RowSize; i++)
             {
-                for (int j = 0; j < ColumnsSize; j++)
+                for (var j = 0; j < ColumnsSize; j++)
                 {
                     //应该按行读取，效率高,写入不走cache无所谓
                     result[j, i] = Datas[i][j];
@@ -121,15 +192,15 @@ namespace TokyoU.Math
         {
             RowSize = rows;
             ColumnsSize = columns;
-            List<List<T>> list = new List<List<T>>();
-            for (int i = 0; i < rows; i++)
+            var list = new List<List<T>>();
+            for (var i = 0; i < rows; i++)
             {
-                List<T> clist = new List<T>();
-                for (int j = 0; j < columns; j++)
+                var tmpList = new List<T>();
+                for (var j = 0; j < columns; j++)
                 {
-                    clist.Add(val);
+                    tmpList.Add(val);
                 }
-                list.Add(clist);
+                list.Add(tmpList);
             }
 
             Datas = list;
@@ -153,7 +224,12 @@ namespace TokyoU.Math
 
             Datas = list;
         }
-        
+
+
+        public IEnumerator<List<T>> GetEnumerator()
+        {
+            return ((IEnumerable<List<T>>) Datas).GetEnumerator();
+        }
 
         public override string ToString()
         {
@@ -176,8 +252,8 @@ namespace TokyoU.Math
         //索引器
         public T this[int r, int c]
         {
-            get { return Datas[r][c]; }
-            set { Datas[r][c] = value; }
+            get => Datas[r][c];
+            set => Datas[r][c] = value;
         }
 
         public Matrix<T> this[int rowFrom, int rowTo, int columnFrom, int columnTo]
@@ -217,9 +293,9 @@ namespace TokyoU.Math
             get
             {
                 List<Vector<T>> vectors = new List<Vector<T>>();
-                for (int i = 0; i < rowsIndexes.Length; i++)
+                for (var i = 0; i < rowsIndexes.Length; i++)
                 {
-                    Vector<T> vector = iloc(rowsIndexes[i], rowsIndexes[i])[0];
+                    Vector<T> vector = Iloc(rowsIndexes[i], rowsIndexes[i])[0];
                     vectors.Add(vector);
                 }
                 //选择需要的列
@@ -231,7 +307,17 @@ namespace TokyoU.Math
                 return new Matrix<T>(vectors);
             }
         }
-  
+
+
+        public void AddARow(int index = -1)
+        {
+            var newRow = new List<T>();
+            for (var i = 0; i < ColumnsCount; i++)
+            {
+                newRow.Add(default);
+            }
+            AddARow(newRow.ToArray(),index);
+        }
         public void AddARow(T[] row, int index = -1)
         {
             if (row.Length != this.Shape.Val)
@@ -253,6 +339,15 @@ namespace TokyoU.Math
             }
         }
 
+        public void AddColumn(int index = -1)
+        {
+            var newColumn = new List<T>();
+            for (var i = 0; i < RowsCount; i++)
+            {
+                newColumn.Add(default);
+            }
+            AddColumn(newColumn.ToArray(),index);
+        }
         public void AddColumn(T[] column, int index = -1)
         {
             if (column.Length != this.Shape.Key)
@@ -261,7 +356,7 @@ namespace TokyoU.Math
             }
             else
             {
-                List<T> newColumn = new List<T>(column);
+                var newColumn = new List<T>(column);
                 if (index < 0)
                 {
                     //默认插在最尾
@@ -283,10 +378,10 @@ namespace TokyoU.Math
 
         public Matrix<T> SubMatrix(int rowTop, int rowBottom, int columnLeft, int columnRight)
         {
-            List<Vector<T>> vectors = iloc(rowTop, rowBottom);
+            var vectors = Iloc(rowTop, rowBottom);
             
-            List<int> indexes = new List<int>();
-            for (int i = columnLeft; i <= columnRight; i++)
+            var indexes = new List<int>();
+            for (var i = columnLeft; i <= columnRight; i++)
             {
                 indexes.Add(i);
             }
@@ -302,10 +397,10 @@ namespace TokyoU.Math
         }
         public Vector<T> Dense()
         {
-            Vector<T> vector = new Vector<T>(RowsCount*ColumnsCount);
-            for (int i = 0; i < RowsCount; i++)
+            var vector = new Vector<T>(RowsCount*ColumnsCount);
+            for (var i = 0; i < RowsCount; i++)
             {
-                for (int j = 0; j < ColumnsCount; j++)
+                for (var j = 0; j < ColumnsCount; j++)
                 {
                     vector[i * ColumnsSize + j] = this[i, j];
                 }
@@ -317,13 +412,29 @@ namespace TokyoU.Math
         }
 
 
-        
+        public void Reverse180()
+        {
+            var n = Shape.Key * Shape.Val;
+            var mid = n >> 1;
+            for (var p1 = 0; p1 < mid; p1++)
+            {
+                var p1X = p1 / Shape.Val;
+                var p1Y = p1 % Shape.Val;
+                var p2 = n - p1 - 1;
+                var p2X = p2 / Shape.Val;
+                var p2Y = p2 % Shape.Val;
+                //swap
+                var t = Datas[p1X][p1Y];
+                Datas[p1X][p1Y] = Datas[p2X][p2Y];
+                Datas[p2X][p2Y] = t;
+            }
+        }
         
         /*选择行/列*/
         //默认选择行
-        public List<Vector<T>> iloc(int from, int to, int axis = 0)
+        public List<Vector<T>> Iloc(int from, int to, int axis = 0)
         {
-            List<Vector<T>> vectors = new List<Vector<T>>();
+            var vectors = new List<Vector<T>>();
             if(axis!=0 && axis!=1) 
                 throw new ArithmeticException("Axis should be 1 or 0");
             //行选择
@@ -331,7 +442,7 @@ namespace TokyoU.Math
             {
                 for (int i = from; i <= to; i++) {
                     //Extract a row
-                    Vector<T> vector = new Vector<T>(Datas[i].ToArray());
+                    var vector = new Vector<T>(Datas[i].ToArray());
                     vector.IsColumnMatrix = false;
                     vectors.Add(vector);
                    
@@ -339,16 +450,16 @@ namespace TokyoU.Math
             }
             else
             {
-                for (int i = from; i <= to; i++)
+                for (var i = from; i <= to; i++)
                 {
-                    Vector<T> v = new Vector<T>(RowsCount);
+                    var v = new Vector<T>(RowsCount);
                     v.IsColumnMatrix = true;
                     vectors.Add(v);
                 }
 
                
-                for (int i = 0; i < RowsCount; i++) {
-                    for (int j = from; j <= to; j++)
+                for (var i = 0; i < RowsCount; i++) {
+                    for (var j = from; j <= to; j++)
                     {
                         vectors[j-from][i] = Datas[i][j];
                     }
@@ -371,27 +482,27 @@ namespace TokyoU.Math
             {
                 throw new ArithmeticException("Matrix shape is" + matrix.Shape +" which shold be (N,1) or (1,N)");
             }
-            if(matrix.RowsCount == 1) return  matrix.iloc(0, 0)[0];
-            return matrix.iloc(0, 0, 1)[0];
+            if(matrix.RowsCount == 1) return  matrix.Iloc(0, 0)[0];
+            return matrix.Iloc(0, 0, 1)[0];
         }
 
 
         public object Clone()
         {
-            Matrix<T> matrix = new Matrix<T>(Datas);
+            var matrix = new Matrix<T>(Datas);
             matrix.RowSize = RowSize;
             matrix.ColumnsSize = ColumnsSize;
             return matrix;
         }
 
-        public delegate Object MatrixMapFunction(int indexR,int indexC,object x);
+        public delegate object MatrixMapFunction(int indexR,int indexC,object x);
 
-        public Matrix<Object> Map(MatrixMapFunction mapFunction)
+        public Matrix<object> Map(MatrixMapFunction mapFunction)
         {
-            Matrix<Object> matrix = (Matrix<T>)Clone();
-            for (int i = 0; i < matrix.RowsCount; i++)
+            Matrix<object> matrix = (Matrix<T>)Clone();
+            for (var i = 0; i < matrix.RowsCount; i++)
             {
-                for (int j = 0; j < matrix.ColumnsCount; j++)
+                for (var j = 0; j < matrix.ColumnsCount; j++)
                 {
                     matrix[i, j] = mapFunction(i,j,matrix[i, j]);
                 }
@@ -400,12 +511,12 @@ namespace TokyoU.Math
         }
 
         
-        public static implicit operator Matrix<Object>(Matrix<T> matrix)
+        public static implicit operator Matrix<object>(Matrix<T> matrix)
         {
-            Matrix<Object> m = new Matrix<object>(matrix.RowsCount,matrix.ColumnsCount);
-            for (int i = 0; i < (int)m.Shape[0]; i++)
+            var m = new Matrix<object>(matrix.RowsCount,matrix.ColumnsCount);
+            for (var i = 0; i < (int)m.Shape[0]; i++)
             {
-                for (int j = 0; j < (int) m.Shape[1]; j++)
+                for (var j = 0; j < (int) m.Shape[1]; j++)
                 {
                     m[i, j] = matrix[i, j];
                 }
@@ -414,12 +525,12 @@ namespace TokyoU.Math
             return m;
         }
        
-        public static explicit operator Matrix<T>(Matrix<Object> matrix)
+        public static explicit operator Matrix<T>(Matrix<object> matrix)
         {
-            Matrix<T> m = new Matrix<T>(matrix.RowsCount,matrix.ColumnsCount);
-            for (int i = 0; i < (int)m.Shape[0]; i++)
+            var m = new Matrix<T>(matrix.RowsCount,matrix.ColumnsCount);
+            for (var i = 0; i < (int)m.Shape[0]; i++)
             {
-                for (int j = 0; j < (int) m.Shape[1]; j++)
+                for (var j = 0; j < (int) m.Shape[1]; j++)
                 {
                     m[i, j] = (T)matrix[i, j];
                 }
@@ -429,16 +540,16 @@ namespace TokyoU.Math
         }
 
         
-        public static Matrix<Object> operator + (Matrix<T> matrix1, Matrix<Object> matrix2)
+        public static Matrix<object> operator + (Matrix<T> matrix1, Matrix<object> matrix2)
         {
             if (!matrix1.Shape.Equals(matrix2.Shape))
             {
                 throw new ArithmeticException();
             }
-            Matrix<Object> m = new Matrix<Object>(matrix1.RowsCount,matrix1.ColumnsCount);
-            for (int i = 0; i < (int)m.Shape[0]; i++)
+            var m = new Matrix<object>(matrix1.RowsCount,matrix1.ColumnsCount);
+            for (var i = 0; i < (int)m.Shape[0]; i++)
             {
-                for (int j = 0; j < (int) m.Shape[1]; j++)
+                for (var j = 0; j < (int) m.Shape[1]; j++)
                 {
                     m[i, j] = (dynamic)matrix1[i, j] + (dynamic)matrix2[i,j];
                 }
@@ -446,19 +557,25 @@ namespace TokyoU.Math
 
             return m;
         }
-        public static Matrix<Object> operator + (Matrix<T> matrix1, Object val)
+        public static Matrix<object> operator + (Matrix<T> matrix1, object val)
         {
             Matrix<Object> mat = new Matrix<object>(matrix1.Shape.Key,matrix1.Shape.Val,val);
             
             return matrix1 + mat;
         }
-        public static Matrix<Object> operator - (Matrix<T> matrix1, Matrix<Object> matrix2)
+        public static Matrix<object> operator - (Matrix<T> matrix1, object val)
+        {
+            var mat = new Matrix<object>(matrix1.Shape.Key,matrix1.Shape.Val,val);
+            
+            return matrix1 - mat;
+        }
+        public static Matrix<object> operator - (Matrix<T> matrix1, Matrix<Object> matrix2)
         {
             if (!matrix1.Shape.Equals(matrix2.Shape))
             {
                 throw new ArithmeticException();
             }
-            Matrix<Object> m = new Matrix<Object>(matrix1.RowsCount,matrix1.ColumnsCount);
+            var m = new Matrix<object>(matrix1.RowsCount,matrix1.ColumnsCount);
             for (int i = 0; i < (int)m.Shape[0]; i++)
             {
                 for (int j = 0; j < (int) m.Shape[1]; j++)
@@ -470,8 +587,26 @@ namespace TokyoU.Math
             return m;
         }
         
-        
-        public static Matrix<Object> operator * (Matrix<T> matrix1, Matrix<Object> matrix2)
+        public static Matrix<object> operator * (Matrix<T> matrix1, object val)
+        {
+            var mat = new Matrix<object>(matrix1.Shape.Key,matrix1.Shape.Val,val);
+            
+            return matrix1.DotMultiply(mat);
+        }
+        public static Matrix<object> operator / (Matrix<T> matrix1, object val)
+        {
+            var m = new Matrix<Object>(matrix1.RowsCount, matrix1.ColumnsCount);
+            for (var i = 0; i < (int)m.Shape[0]; i++)
+            {
+                for (var j = 0; j < (int) m.Shape[1]; j++)
+                {
+                    m[i, j] = (dynamic)matrix1[i, j] / (dynamic)val;
+                }
+            }
+
+            return m;
+        }
+        public static Matrix<object> operator * (Matrix<T> matrix1, Matrix<object> matrix2)
         {
             if (!matrix1.Shape.Val.Equals(matrix2.Shape.Key))
             {
@@ -484,7 +619,7 @@ namespace TokyoU.Math
                 Vector<Object> vec = new Vector<T>(matrix2.ColumnsCount); 
                 for (int j = 0; j < (int) matrix1.Shape[1]; j++)
                 {
-                    vec = vec + matrix2.iloc(j,j , 0)[0] * matrix1[i,j] ;
+                    vec = vec + matrix2.Iloc(j,j , 0)[0] * matrix1[i,j] ;
                 }
 
                 m[i, i, -1, -1] = ((Matrix<T>)(Matrix<Object>)vec)._T();
@@ -507,6 +642,11 @@ namespace TokyoU.Math
             return hash;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
@@ -514,9 +654,9 @@ namespace TokyoU.Math
             {
                 Matrix<T> matrix = (Matrix<T>) obj;
                 if (matrix.ColumnsCount != ColumnsCount || matrix.RowsCount != RowsCount) return false;
-                for (int i = 0; i < RowsCount; i++)
+                for (var i = 0; i < RowsCount; i++)
                 {
-                    for (int j = 0; j < ColumnsCount; j++)
+                    for (var j = 0; j < ColumnsCount; j++)
                     {
                         if (!this[i, j].Equals(matrix[i, j])) return false;
                     }
@@ -527,79 +667,51 @@ namespace TokyoU.Math
             return false;
         }
 
-        //默认在整个矩阵范围找最大值
-        // -1:整个矩阵 0:行 1:列
-        public Vector<T> Max(int axis = -1)
+       
+
+        public Matrix<object> BlockMultiPly(Matrix<object> mat, int blockSize = 16)
         {
-            if (ColumnsCount == 0 || RowsCount == 0) return null;
-            if (axis == -1)
+            if (!Shape[1].Equals(mat.Shape[0]) || blockSize <= 0)
             {
-                T max = this[0, 0];
-                for (int i = 0; i < RowsCount; i++)
+                throw new ArithmeticException();
+            }
+            var m = new Matrix<Object>(RowsCount, ColumnsCount);
+
+            for (var i = 0; i < RowsCount; i += blockSize)
+            {
+                for (var j = 0; j < ColumnsSize; j += blockSize)
                 {
-                    for (int j = 0; j < ColumnsCount; j++)
+                    for (var k = 0; k < (int) mat.Shape[1]; k += blockSize)
                     {
-                        if ((dynamic)this[i, j] > (dynamic)max)
+                        for (var x = 0; x < blockSize && x < (int) Shape[1]; x++)
                         {
-                            max = this[i, j];
+                            for (var y = 0; y < blockSize && y < (int) Shape[0]; y++)
+                            {
+                                for (var z = 0; z < blockSize && z < (int) mat.Shape[1]; z++)
+                                {
+                                    var foo = (dynamic)this[x,y] * mat[y,z];
+                                    m[x, y] = m[x, y] + foo;
+                                }
+                            }
                         }
                     }
                 }
-
-                return (Vector<T>)max;
             }
-            if(axis == 0) //行上寻找最大
-            {
-                Vector<T> maxes = new Vector<T>(ColumnsCount);
-                maxes.IsColumnMatrix = true;
-                for (int i = 0; i < RowsCount; i++)
-                {
-                    T max = this[i, 0];
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        if ((dynamic)this[i, j] > (dynamic)max)
-                        {
-                            max = this[i, j];
-                        }
-                    }
 
-                    maxes[i] = max;
-                }
-
-                return maxes;
-            }
-            else
-            {
-                Vector<T> maxes = new Vector<T>(ColumnsCount);
-                maxes.IsColumnMatrix = false;
-                for (int j = 0; j < ColumnsCount; j++)
-                {
-                    maxes[j] = this[0, j];
-                }
-                for (int i = 1; i < RowsCount; i++)
-                {
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        if ((dynamic)this[i, j] > (dynamic)maxes[j])
-                        {
-                            maxes[j] = this[i, j];
-                        }
-                    }
-                }
-                return maxes;
-            }
+            return m;
         }
-
-        public Matrix<Object> Multiply(Matrix<Object> matrix)
+        
+        
+        public Matrix<object> DotMultiply(Matrix<object> matrix)
         {
             if (!matrix.Shape.Equals(Shape))
             {
                 throw new ArithmeticException();
             }
-            Matrix<Object> m = new Matrix<Object>(RowsCount,ColumnsCount);
-            for (int i = 0; i < (int)m.Shape[0]; i++)
+            var m = new Matrix<Object>(RowsCount,ColumnsCount);
+            for (var i = 0; i < (int)m.Shape[0]; i++)
             {
-                for (int j = 0; j < (int) m.Shape[1]; j++)
+                for (var j = 0; j < (int) m.Shape[1]; j++)
                 {
                     m[i, j] = (dynamic)this[i, j] * (dynamic)matrix[i,j];
                 }
@@ -607,129 +719,38 @@ namespace TokyoU.Math
 
             return m;
         }
-        public Vector<T> Min(int axis = -1)
-        {
-            if (ColumnsCount == 0 || RowsCount == 0) return null;
-            if (axis == -1)
-            {
-                T max = this[0, 0];
-                for (int i = 0; i < RowsCount; i++)
-                {
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        if ((dynamic)this[i, j] < (dynamic)max)
-                        {
-                            max = this[i, j];
-                        }
-                    }
-                }
-
-                return (Vector<T>)max;
-            }
-            if(axis == 0) //行上寻找最大
-            {
-                Vector<T> maxes = new Vector<T>(ColumnsCount);
-                maxes.IsColumnMatrix = true;
-                for (int i = 0; i < RowsCount; i++)
-                {
-                    T max = this[i, 0];
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        if ((dynamic)this[i, j] < (dynamic)max)
-                        {
-                            max = this[i, j];
-                        }
-                    }
-
-                    maxes[i] = max;
-                }
-
-                return maxes;
-            }
-            else
-            {
-                Vector<T> maxes = new Vector<T>(ColumnsCount);
-                maxes.IsColumnMatrix = false;
-                for (int j = 0; j < ColumnsCount; j++)
-                {
-                    maxes[j] = this[0, j];
-                }
-                for (int i = 1; i < RowsCount; i++)
-                {
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        if ((dynamic)this[i, j] < (dynamic)maxes[j])
-                        {
-                            maxes[j] = this[i, j];
-                        }
-                    }
-                }
-                return maxes;
-            }
-        }
-        
-        public Vector<Object> Avg(int axis = -1)
-        {
-            if (ColumnsCount == 0 || RowsCount == 0) return null;
-            if (axis == -1)
-            {
-                dynamic sum = this[0, 0];
-                for (int i = 0; i < RowsCount; i++)
-                {
-                    for (int j = 0; j < ColumnsCount; j++)
-                    {
-                        sum = sum + (dynamic) this[i, j];
-                    }
-                }
-
-                return (Vector<Object>)(sum/((float)(ColumnsCount*RowsCount)));
-            }
-            if(axis == 0) 
-            {
-                Vector<Object> avgs = new Vector<T>(ColumnsCount);
-                List<Vector<T>> list = iloc(0, RowsCount - 1);
-                int i = 0;
-                foreach (var v in list)
-                {
-                    avgs[i] = v.Avg();
-                    i++;
-                }
-                avgs.IsColumnMatrix = true;
-                return avgs;
-            }
-            else
-            {
-                Vector<Object> avgs = new Vector<T>(ColumnsCount);
-                List<Vector<T>> list = iloc(0, RowsCount - 1,1);
-                int i = 0;
-                foreach (var v in list)
-                {
-                    avgs[i] = v.Avg();
-                    i++;
-                }
-
-                avgs.IsColumnMatrix = false;
-                return avgs;
-            }
-        }
+      
 
         public Matrix<T> Reshape(Tuple<int, int> shape)
         {
             //为了效率更高可以用内存操作
             if (shape != this.Shape) throw new ArithmeticException();
-            int rs = (int) shape[0];
-            int cs = (int) shape[1];
-            Matrix<T> matrix = new Matrix<T>(rs,cs);
-            for (int i = 0; i < rs; i++)
+            var rs = (int) shape[0];
+            var cs = (int) shape[1];
+            var matrix = new Matrix<T>(rs,cs);
+            for (var i = 0; i < rs; i++)
             {
-                for (int j = 0; j < cs; j++)
+                for (var j = 0; j < cs; j++)
                 {
-                    int pos = i * rs + j;
+                    var pos = i * rs + j;
                     matrix[i, j] = this[pos / ColumnsCount, pos % ColumnsCount];
                 }
             }
 
             return matrix;
         }
+
+
+        public Vector<T> this[int row]
+        {
+            get
+            {
+                return new Vector<T>( Datas[row].ToArray());
+            }
+            set
+            {
+                Datas[row] = value.ToList();
+            }
+        } 
     }
 }

@@ -14,6 +14,7 @@ namespace TokyoU
         public static void GetTopK<T>(T[] arr, int k) where T:IComparable
         {
             IntervalHeap<T> heap = new IntervalHeap<T>();
+            
             foreach (var e in arr)
             {
                 if (heap.Count < k)

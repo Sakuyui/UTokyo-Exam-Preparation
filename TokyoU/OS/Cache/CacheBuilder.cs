@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 using TokyoU.os.Cache.ReplaceStrategies;
 
 namespace TokyoU.os.Cache

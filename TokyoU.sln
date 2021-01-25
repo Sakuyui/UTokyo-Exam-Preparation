@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokyoU", "TokyoU\TokyoU.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithm", "Algorithm\Algorithm.csproj", "{38B61331-DE94-43C4-83ED-499516681DDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetCode", "LeetCode\LeetCode.csproj", "{F344E65E-6118-48EF-9755-FA4677DE5713}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{38B61331-DE94-43C4-83ED-499516681DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38B61331-DE94-43C4-83ED-499516681DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38B61331-DE94-43C4-83ED-499516681DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F344E65E-6118-48EF-9755-FA4677DE5713}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F344E65E-6118-48EF-9755-FA4677DE5713}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F344E65E-6118-48EF-9755-FA4677DE5713}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F344E65E-6118-48EF-9755-FA4677DE5713}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

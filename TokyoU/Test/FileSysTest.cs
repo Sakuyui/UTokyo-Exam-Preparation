@@ -8,8 +8,14 @@ using TokyoU.Math;
 
 namespace TokyoU.Test
 {
+
+
+
     public static class FileSysTest
     {
+       
+        
+        
         //cast转换数据类型
         //select可以整体操作
         //where可以过滤

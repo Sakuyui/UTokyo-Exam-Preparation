@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{38B61331-DE94-43C4-83ED-499516681DDA}</ProjectGuid>
+        <OutputType>Exe</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Algorithm</RootNamespace>
+        <AssemblyName>Algorithm</AssemblyName>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="C5, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\C5.3.0.0-beta\lib\netstandard2.0\C5.dll</HintPath>
+        </Reference>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="AlgorithmC1.cs" />
+        <Compile Include="AlgorithmNote\AlgorithmNodeC2.cs" />
+        <Compile Include="AlgorithmNote\AlgorithmNoteC1.cs" />
+        <Compile Include="AlgorithmNote\AlgorithmNoteC4.cs" />
+        <Compile Include="BeautyProgmming\C1.cs" />
+        <Compile Include="CAlgorithmStructure\BitOperation.cs" />
+        <Compile Include="CAlgorithmStructure\C11DP.cs" />
+        <Compile Include="CAlgorithmStructure\C5Search.cs" />
+        <Compile Include="CAlgorithmStructure\C8Structure.cs" />
+        <Compile Include="CAlgorithmStructure\CAlgorithmStructure1.cs" />
+        <Compile Include="CAlgorithmStructure\Geometry.cs" />
+        <Compile Include="Concour\Algorithm.cs" />
+        <Compile Include="Concour\C2.cs" />
+        <Compile Include="FunctionExt.cs" />
+        <Compile Include="OfferOrientAlgorithm.cs" />
+        <Compile Include="Other.cs" />
+        <Compile Include="Pratice.cs" />
+        <Compile Include="Program.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="UnionFind.cs" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>

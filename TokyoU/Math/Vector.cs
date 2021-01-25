@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Policy;
 
 namespace TokyoU.Math
 {
-    public class Vector<T> : ICloneable,IComparable<Vector<Object>>
+    public class Vector<T> : ICloneable,IComparable<Vector<Object>>, IEnumerable<T>
     {
         public bool IsColumnMatrix = true;
 
@@ -17,11 +18,12 @@ namespace TokyoU.Math
         {
             get { return Data.Count;}
         }
-        public Vector(T[] data)
+        public Vector(params T[] data)
         {
             this.Data = new List<T>(data);
         }
 
+      
         public Vector()
         {
         }
@@ -124,8 +126,16 @@ namespace TokyoU.Math
                 return vector;
             }
         }
-        
-        
+
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var data in Data)
+            {
+                yield return data;
+            }
+        }
+
         public override string ToString()
         {
             var result = "[";
@@ -135,6 +145,11 @@ namespace TokyoU.Math
             }
             result = result.Substring(0, result.Length - 1) +"]";
             return IsColumnMatrix?result+"^T":result;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public object Clone()

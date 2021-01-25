@@ -1,12 +1,26 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace TokyoU.Math
 {
-    public class DataFrame
+    public static class DataFrameTest
+    {
+        public static void Test()
+        {
+            var df = new DataFrame(new[] {"cab", "cb","aa"});
+            df.AddNewRow("11","22","33");
+            df.PrintToConsole();
+        }
+    }
+    public class DataFrame : IEnumerable<Serial>
     {
       
+        
+        
+        
         private List<string> _columnNames;
         public List<string> ColumnNames
         {
@@ -39,9 +53,9 @@ namespace TokyoU.Math
         }
 
 
-        public void AddNewRow(List<object> data)
+        public void AddNewRow(params object[] data)
         {
-            if(data.Count != _columnNames.Count) throw new ArithmeticException();
+            if(data.Length != _columnNames.Count) throw new ArithmeticException();
             var m = MappingDict;
             var index = 0;
             foreach (var c in _columnNames)
@@ -70,6 +84,52 @@ namespace TokyoU.Math
                 }
             }
             Serials.Add(s);
+        }
+
+        public override string ToString()
+        {
+            return ToStringTable();
+        }
+
+        public IEnumerable<List<object>> ColumnsDataEnumerator()
+        {
+            for (var i = 0; i < _columnNames.Count; i++)
+            {
+                var list = this.Select(s => s[_columnNames[i]]).ToList();
+                yield return list;
+            }
+        }
+        public string ToStringTable()
+        {
+            var maxColumnsWidth  = ColumnsDataEnumerator()
+                .Select(e => e.Select(s => s.ToString().Length).ToList()).Select(e => e.Max()).ToList();
+            
+
+            var headerSpliter = new string('-', maxColumnsWidth.Sum(i => i + 3) - 1);
+
+            var sb = new StringBuilder();
+            for (var rowIndex = 0; rowIndex < Serials.Count; rowIndex++)
+            {
+                for (var colIndex = 0; colIndex < _columnNames.Count; colIndex++)
+                {
+                    // Print cell
+                    var cell = Serials[rowIndex][_columnNames[colIndex]].ToString();
+                    cell = cell.PadRight(maxColumnsWidth[colIndex]);
+                    sb.Append(" | ");
+                    sb.Append(cell);
+                }
+
+                // Print end of line
+                sb.Append(" | ");
+                sb.AppendLine();
+
+                // Print splitter
+                if (rowIndex != 0) continue;
+                sb.AppendFormat(" |{0}| ", headerSpliter);
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
 
         public void AddNewRow(Serial s)
@@ -113,7 +173,8 @@ namespace TokyoU.Math
                 }else{throw new ArithmeticException();}
             }
         }
-
+        
+        
         public DataFrame this[IEnumerable<string> columns]
         {
             get
@@ -131,9 +192,19 @@ namespace TokyoU.Math
                 return df;
             }
         }
+
+        public IEnumerator<Serial> GetEnumerator()
+        {
+            return ((IEnumerable<Serial>) Serials).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
-    public class Serial
+    public class Serial : IEnumerable<object>
     {
         public Dictionary<string, object> DataMap {get; private set; } = new Dictionary<string, object>();
         public List<string> ColumnNames => DataMap.Keys.ToList();
@@ -173,7 +244,16 @@ namespace TokyoU.Math
                 return s;
             }
         }
-        
 
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            return Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
