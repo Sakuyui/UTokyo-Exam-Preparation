@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokyoU", "TokyoU\TokyoU.csproj", "{73DD4E72-20C2-483B-BD0E-02388751E182}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTokyo", "UTokyo\UTokyo.csproj", "{73DD4E72-20C2-483B-BD0E-02388751E182}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithm", "Algorithm\Algorithm.csproj", "{38B61331-DE94-43C4-83ED-499516681DDA}"
 EndProject
