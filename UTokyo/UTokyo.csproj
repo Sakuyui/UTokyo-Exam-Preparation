@@ -48,6 +48,7 @@
     <Compile Include="FunctionExt.cs" />
     <Compile Include="Geometry\Point.cs" />
     <Compile Include="ImageProcess\ImageFilter.cs" />
+    <Compile Include="ImageProcess\ImageProcessTest.cs" />
     <Compile Include="InformaticThoery\CoderTest.cs" />
     <Compile Include="InformaticThoery\HuffmanEnCoder.cs" />
     <Compile Include="Math\Counter.cs" />

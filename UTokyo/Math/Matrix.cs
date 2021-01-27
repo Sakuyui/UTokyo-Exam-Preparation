@@ -39,15 +39,10 @@ namespace UTokyo.Math
            // matrix.ColumnsEnumerator.Select(e => e.Max()).PrintEnumerationToConsole();
             //matrix.RowsEnumerator.Select(e => e.Max()).PrintEnumerationToConsole();
             
-            Matrix<int> filter = new Matrix<int>(Utils.CreateTwoDimensionList(new []
-            {
-                1, 0, 1,
-                0, 5, 0,
-                1, 0, 1
-            },3,3));
+           
             //平均
            // matrix.RowsEnumerator.Select(e => e.Sum() / e.Count).PrintEnumerationToConsole();
-           ImageFilter.ApplyEqualWithConvolutionToImage(matrix, filter);
+           
         }
     }
     public class Matrix<T> : ICloneable, IEnumerable<List<T>>

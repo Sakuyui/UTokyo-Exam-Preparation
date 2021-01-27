@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Policy;
+using UTokyo.ImageProcess;
 using UTokyo.OS;
 using UTokyo.Structure;
 using UTokyo.Structure.Graph;
@@ -63,11 +64,11 @@ namespace UTokyo
             Console.WriteLine(vector1);
             Vector<double> vector2 = new Vector<double>(new []{1.1,2.2,3.3});
             Vector<int> vector3 = new Vector<int>(new []{1,2,3});
-            Console.WriteLine(vector2*vector3);
-            Console.WriteLine(vector2+vector3);
+            Console.WriteLine(vector2 * vector3);
+            Console.WriteLine(vector2 + vector3);
             
-            Console.WriteLine(vector2-vector3);
-            Console.WriteLine(vector2/vector3);
+            Console.WriteLine(vector2 - vector3);
+            Console.WriteLine(vector2 / vector3);
             Console.WriteLine(vector2._T()*vector3);
             Console.WriteLine(vector2.CompareTo(vector3));
             
@@ -75,7 +76,7 @@ namespace UTokyo
                 .Map( ((i,o) => (dynamic)o+100)));
             Console.WriteLine(((Vector<Object>)(vector2*vector3)).L2_Distance(vector2+vector3));
             Console.WriteLine(((Vector<Object>)(vector2*vector3)).L1_Distance(vector2+vector3));
-            Console.WriteLine(vector1*2.1);
+            Console.WriteLine(vector1 * 2.1);
             
             
             //向量维度排序
@@ -90,10 +91,12 @@ namespace UTokyo
                     return -1;
                 }
             }));
+          
             
             
-            
-            
+      
+
+
             Console.WriteLine(((Matrix<int>)vector1._T())._T());
             Console.WriteLine(new Matrix<int>(5,5,1));
             Console.WriteLine((Vector<int>)( ((Matrix<int>)vector1._T())));
@@ -153,7 +156,9 @@ namespace UTokyo
         public static void Main(string[] args)
         {
             var nums = new[] {4, 4, 2, 45, 5, 1, 44, 28};
-            CoderTest.HuffmanEnCoderTest();
+        
+            //ImageProcessTest.FilterTest();
+            //CoderTest.HuffmanEnCoderTest();
             //nums.ToMatrix(2,4).PrintToConsole();
             //nums.GroupByCount(3).PrintCollectionToConsole();
             //nums.GroupBy(e => e)
@@ -166,7 +171,7 @@ namespace UTokyo
             //MemoryCacheTest.Test();
             //var m = nums.Select(e => e).MinBy(e => e - 10);
             //Console.WriteLine(m);
-           // MatrixTest.Test();
+            //MatrixTest.Test();
 
             //AlgorithmP.GetTopK(new []{25,36,4,55,71,18,0,71,89,65},3);
             //AdvanceStructureTest.CacheTest();

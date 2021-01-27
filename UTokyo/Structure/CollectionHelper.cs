@@ -84,7 +84,13 @@ namespace UTokyo
                 }
                 Console.WriteLine();
             }
-            
+            var s2 = 
+                from e1 in nums
+                join e2 in nums
+                    on true equals true
+                select (e1, e2);
+            s2.Distinct().Count().PrintToConsole();
+            s2.Distinct().PrintEnumerationToConsole();
         }
         
         public static List<T> CreateListWithDefault<T>(int k, T data = default)

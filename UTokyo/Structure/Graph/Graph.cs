@@ -12,7 +12,7 @@ namespace UTokyo.Structure.Graph
     {
         public static void Test()
         {
-            MatrixGraph<int> matrixGraph = new MatrixGraph<int>(5);
+            var matrixGraph = new MatrixGraph<int>(5);
 
             var n1 = matrixGraph.AddNode(0);
             var n2 = matrixGraph.AddNode(1);
@@ -24,6 +24,7 @@ namespace UTokyo.Structure.Graph
         }
 
 
+        //dfs和回溯是相似的。path其实就是当前路径。遍历某个节点时扔进去，回溯的时候弹出。因为是iddfs要有limit,还要记录目前的cost
         public static (int cost, bool found) IDAStartDFS(MatrixGraph<int> matrixGraph, List<int> path, int g, int limit, int target)
         {
             if (!path.Any())
@@ -31,13 +32,19 @@ namespace UTokyo.Structure.Graph
             var lastNode = path.Last();
             var h = 0; //估计函数
             var f = g + h;
+            ///////////叶子判断
+            //超过限制则返回
             if (f > limit)
                 return (f, false);
             //找到目标
             if (lastNode == target)
                 return (f, true);
+            
             var min = int.MaxValue;
             
+            
+            ///////////分支操作
+            //任意没访问过的节点进行dfs
             foreach (var e in 
                 matrixGraph.GetExtendNodes(matrixGraph[lastNode]).Where(e => !path.Contains(matrixGraph[e])))
             {
@@ -58,59 +65,108 @@ namespace UTokyo.Structure.Graph
 
             return (min, false);
         }
-        
-        public static int AStart(MatrixGraph<int> matrixGraph, int startNodeCode = 0, int endNode = 0)
+
+
+
+
+        //多源最短惹。NB，但是O(n^3惹惹惹)
+        public static void FloydWarshall(MatrixGraph<int> matrixGraph)
         {
             var n = matrixGraph.NodeCount;
-            //init距离为最大值
-            var dist = new int[n].Select(e => int.MaxValue).ToList();
-            var previous = new int[n];
-            //访问集合
-            var openSet = new PriorityQueue<int, int>();
-            var closeSet = new System.Collections.Generic.HashSet<int>();
-            
-            openSet.EnQueue(0, startNodeCode);
-            previous[startNodeCode] = startNodeCode;
-            dist[startNodeCode] = 0;
-            
-            while (openSet.Any())
+            var mat = new Matrix<int>(n, n, int.MaxValue);
+            var previous = new int[n, n];
+            for (var i = 0; i < n; i++)
             {
-                //最小值
-                var (firstNode, _) = openSet.DeQueue();
-                if (firstNode == endNode)
-                    return dist[endNode];
-                
-                closeSet.Add(firstNode); //visit
-                var ext = matrixGraph.GetExtendNodes(matrixGraph[firstNode]);
-                
-                //所有未访问的拓展节点
-                foreach (var tNode in ext.Where(e => !closeSet.Contains(matrixGraph[e])))
+                mat[i, i] = 0;
+            }
+
+            foreach (var x in matrixGraph.Edges)
+            {
+                mat[x.From, x.To] = mat[x.From, x.To];
+            }
+
+            for (var x = 0; x < n; x++)
+            {
+                for (var y = 0; y < n; y++)
                 {
-                    var x = matrixGraph[tNode]; //节点编号
-                  
-                    var newDist = dist[firstNode] + (int) matrixGraph[firstNode, x].Data;
-                    //松弛
-                    if (newDist < dist[x])
+                    for (var z = 0; z < n; z++)
                     {
-                        previous[matrixGraph[tNode]] = firstNode;
-                        dist[matrixGraph[tNode]] = newDist;
-                        //注意惹，不在openSet的话要加进去
-                        if (openSet.ContainsValue(x))
+                        if (mat[x, z] > mat[x, y] + mat[y, z])
                         {
-                            openSet.RemoveByItem(x);
-                            openSet.EnQueue(newDist, x);
+                            mat[x, z] = mat[x, y] + mat[y, z];
+                            previous[x, z] = y; //以x为起点的最短路径下，z的前置是什么
                         }
                     }
                 }
             }
+        }
+        
+        
+        //O(VE) 单源最短，允许负边
+        public static void BellmanFord(MatrixGraph<int> matrixGraph, int start)
+        {
+            var n = matrixGraph.NodeCount;
+            var previous = new int[n];
+            var distance = new int[n].Select(e => int.MaxValue).ToArray();
+            distance[start] = 0;
+            for (var i = 0; i < n; i++)
+            {
+                //对于所有边
+                foreach (var e in matrixGraph.Edges)
+                {
+                    var u = e.From;
+                    var v = e.To;
+                    //经过u到v
+                    if (distance[v] > distance[u] + (int) matrixGraph[u, v].Data)
+                    {
+                        distance[v] = distance[u] + (int) matrixGraph[u, v].Data;
+                        previous[v] = u;
+                    }
+                }
+            }
+        }
 
-            return int.MaxValue;
+        
+        //A* - 启发式算法。 这里启发函数=0，相当于迪杰特斯拉
+        public static int AStart(MatrixGraph<int> matrixGraph, int start, int target)
+        {
+            var n = matrixGraph.NodeCount;
+            var openSet = new PriorityQueue<int, int>();
+            var closeSet = new System.Collections.Generic.HashSet<int>();
+            var distance = new int[n].Select(e => int.MaxValue).ToArray();
+            var previous = new int[n];
+            distance[start] = 0;
+            previous[start] = start;
+            openSet.EnQueue(0, start);
+            
+            while (openSet.Any())
+            {
+                var firstNodeCode = openSet.DeQueue();
+                closeSet.Add(firstNodeCode.item);
+                foreach (var x in matrixGraph.GetExtendNodes(matrixGraph[firstNodeCode.item])
+                    .Where(e => !closeSet.Contains(matrixGraph[e])))
+                {
+                    var xCode = matrixGraph[x];
+                    var newDistance = distance[firstNodeCode.item] + (int) matrixGraph[firstNodeCode.item, xCode].Data;
+                    if (newDistance < distance[xCode])
+                    {
+                        distance[xCode] = newDistance;
+                        previous[xCode] = firstNodeCode.item;
+                        openSet.UpdateOrSetPriority(xCode, newDistance);
+                    }
+                }
+            }
+
+            return distance[target];
+
         }
     }
 
     public abstract class BaseEdge
     {
         public object Data = null;
+        public int From;
+        public int To;
     }
 
     public class GraphEdge : BaseEdge
@@ -279,6 +335,8 @@ namespace UTokyo.Structure.Graph
         {
             var nI1 = _nodeMapping[startNode];
             var nI2 = _nodeMapping[endNode];
+            edge.From = nI1;
+            edge.To = nI2;
             if (nI1 < 0 || nI2 < 0) return;
             this[nI1, nI2] = edge;
         }

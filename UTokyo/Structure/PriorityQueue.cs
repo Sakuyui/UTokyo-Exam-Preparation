@@ -31,6 +31,20 @@ namespace UTokyo.Structure
         
         SortedList<TPriority, TItem> _sortedList;
 
+
+        public IEnumerable<TPriority> Keys => _sortedList.Keys;
+        public IEnumerable<TItem> Values => _sortedList.Values;
+
+        
+        public void UpdateOrSetPriority(TItem item, TPriority priority)
+        {
+            if (ContainsValue(item))
+            {
+                RemoveByItem(item);
+            }
+            
+            EnQueue(priority, item);
+        }
         public PriorityQueue(DuplicateKeyComparer<TPriority>.ComparerStrategy comparerStrategy = null)
         {
             _sortedList = new SortedList<TPriority, TItem>(new DuplicateKeyComparer<TPriority>(comparerStrategy));
