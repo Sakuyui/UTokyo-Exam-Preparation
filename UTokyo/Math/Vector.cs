@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Policy;
 
 namespace UTokyo.Math
@@ -28,6 +29,14 @@ namespace UTokyo.Math
         {
         }
 
+
+        public Vector<T> Normalize()
+        {
+            Vector<T> v = (Vector<T>) Clone();
+            var r = System.Math.Sqrt(Data.Sum(e => (dynamic)e * e));
+            v.Data = Data.Select(e => (dynamic)e / r).Select(e => (T)e).ToList();
+            return v;
+        }
         public Vector(int size,T val = default(T))
         {
             this.Data = new List<T>();
@@ -46,37 +55,46 @@ namespace UTokyo.Math
         }
 
       
-        public void Insert(T val , int index = -1)
+        public Vector<T> Insert(T val , int index = -1)
         {
-            if (Data == null) return;
+            if (Data == null) return null;
             if (index > Data.Count || index < -(Data.Count - 1))
             {
                 throw new IndexOutOfRangeException();
             }
             if (index >= 0)
             {
-                Data.Insert(index,val);
+                var vector = (Vector<T>) Clone();
+                vector.Data.Insert(index,val);
+                return vector;
             }
             else
             {
-                Data.Insert(Data.Count + index + 1,val);
+                var vector = (Vector<T>) Clone();
+                vector.Data.Insert(Data.Count + index + 1,val);
+                return vector;
             }
+            
         }
         
-        public void Delete(int index = -1)
+        public Vector<T> Delete(int index = -1)
         {
-            if (Data == null) return;
+            if (Data == null) return null;
             if (index > Data.Count || index < -(Data.Count - 1))
             {
                 throw new IndexOutOfRangeException();
             }
             if (index >= 0)
             {
-                Data.RemoveAt(index);
+                var vector = (Vector<T>) Clone();
+                vector.Data.RemoveAt(index);
+                return vector;
             }
             else
             {
-                Data.RemoveAt(Data.Count + index );
+                var vector = (Vector<T>) Clone();
+                vector.Data.RemoveAt(Data.Count + index );
+                return vector;
             }
         }
         /* 索引器使用 */
@@ -356,16 +374,16 @@ namespace UTokyo.Math
             return newVec;
         }
 
-        public Object L2_Distance(Vector<Object> vector)
+        public object L2_Distance(Vector<Object> vector)
         {
             Vector<Object> v1 = this - vector;
             //Console.WriteLine(v1);
             //Console.WriteLine((v1._T() * v1)[0]);
             return v1._T() * v1;
         }
-        public Object L1_Distance(Vector<Object> vector)
+        public object L1_Distance(Vector<Object> vector)
         {
-            Vector<Object> v1 = this - vector;
+            Vector<object> v1 = this - vector;
             
             return v1.Map(((i,o) => System.Math.Abs((dynamic) o))).Sum();
         }

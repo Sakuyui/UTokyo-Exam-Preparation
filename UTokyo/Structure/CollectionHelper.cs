@@ -93,6 +93,27 @@ namespace UTokyo
             s2.Distinct().PrintEnumerationToConsole();
         }
         
+        public static IList<string> TopKFrequent(string[] words, int k)
+        {
+            //写一个比较器函数
+            
+            
+            
+            
+            //统计字符串频率并取出频率最高的k个字符串
+           return  words.GroupBy(e => e) //按字符串分组 
+                .Select(e => (name: e.Key, count: e.Count())) //计数
+                //排序
+                .OrderBy(e => e.name) 
+                .ThenBy(e => e.count)
+                //仅保留字符串
+                .Select(e => e.name)
+                //选择前k个
+                .Take(k).ToList();
+            
+            
+        }
+        
         public static List<T> CreateListWithDefault<T>(int k, T data = default)
         {
             if (k < 0) return null;
@@ -103,6 +124,8 @@ namespace UTokyo
             }
             return list;
         }
+        
+        
 
         public static List<List<T>> CreateTwoDimensionList<T>(T[] data, int row, int columns)
         {

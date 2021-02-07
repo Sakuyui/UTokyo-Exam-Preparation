@@ -11,5 +11,7 @@ namespace UTokyo.Structure.Graph
         public abstract void ChangeEdge(GraphNode<TNodeType> startNode, GraphNode<TNodeType> endNode, BaseEdge edge);
         public abstract System.Collections.Generic.HashSet<GraphNode<TNodeType>> GetExtendNodes(
             GraphNode<TNodeType> node);
+        public abstract System.Collections.Generic.HashSet<GraphNode<TNodeType>> GetExtendNodes(
+           int node);
     }
 }

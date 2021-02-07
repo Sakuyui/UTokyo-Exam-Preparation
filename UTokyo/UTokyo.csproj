@@ -44,11 +44,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgorithmP.cs" />
+    <Compile Include="CustomerComparer.cs" />
     <Compile Include="FileSystem\FileSysHelper.cs" />
     <Compile Include="FunctionExt.cs" />
     <Compile Include="Geometry\Point.cs" />
+    <Compile Include="Geometry\TransFormUtil.cs" />
+    <Compile Include="ImageProcess\Image.cs" />
     <Compile Include="ImageProcess\ImageFilter.cs" />
     <Compile Include="ImageProcess\ImageProcessTest.cs" />
+    <Compile Include="ImageProcess\ImageProcessUtils.cs" />
+    <Compile Include="InformaticThoery\ArithmeticCoding.cs" />
     <Compile Include="InformaticThoery\CoderTest.cs" />
     <Compile Include="InformaticThoery\HuffmanEnCoder.cs" />
     <Compile Include="Math\Counter.cs" />
@@ -69,20 +74,29 @@
     <Compile Include="OS\JobScheduling\BaseOsJobScheduler.cs" />
     <Compile Include="OS\JobScheduling\SJFOsJobScheduler.cs" />
     <Compile Include="OS\MemoryCache.cs" />
+    <Compile Include="Practice\DP.cs" />
+    <Compile Include="Practice\Test1.cs" />
+    <Compile Include="Practice\TextBook\DataStructure.cs" />
+    <Compile Include="Practice\TextBook\GraphAlgorithm.cs" />
+    <Compile Include="Practice\TextBook\Search.cs" />
+    <Compile Include="Practice\TextBook\Sort.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Structure\Automata\Automata.cs" />
     <Compile Include="Structure\BinaryTreeNode.cs" />
     <Compile Include="Structure\CollectionHelper.cs" />
     <Compile Include="Structure\Comparer.cs" />
+    <Compile Include="Structure\DataFrame.cs" />
     <Compile Include="Structure\DisJointSet.cs" />
     <Compile Include="Structure\Graph\BaseGraph.cs" />
     <Compile Include="Structure\Graph\Graph.cs" />
+    <Compile Include="Structure\Graph\MinFlow.cs" />
     <Compile Include="Structure\IndexKeepTable.cs" />
     <Compile Include="Structure\PriorityQueue.cs" />
     <Compile Include="Structure\SlideWindow.cs" />
     <Compile Include="Test\AdvanceStructureTest.cs" />
     <Compile Include="Test\FileSysTest.cs" />
+    <Compile Include="Test\TempTest.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

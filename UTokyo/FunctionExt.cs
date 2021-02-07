@@ -150,5 +150,20 @@ namespace UTokyo
             str = str.Substring(0, str.Length - 1) + "]";
             Console.WriteLine(str);
         }
+
+        public static IEnumerable<TResult> ResultSaveAggregate<TSource, TResult>
+            (this IEnumerable<TSource> enumerable, Func<TResult,TSource, TResult> func, TResult begin)
+        {
+            var ans = new List<TResult>();
+            var cur = begin;
+            foreach (var e in enumerable)
+            {
+                var tmp = func.Invoke(cur, e);
+                ans.Add(tmp);
+                cur = tmp;
+            }
+
+            return ans;
+        }
     }
 }

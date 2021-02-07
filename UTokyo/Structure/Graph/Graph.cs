@@ -24,6 +24,40 @@ namespace UTokyo.Structure.Graph
         }
 
 
+        public static (List<List<int>>, int[,]) Floyd(MatrixGraph<int> matrixGraph)
+        {
+            var n = matrixGraph.NodeCount;
+            var dist = Utils.CreateTwoDimensionList(new int[n * n].Select(e => int.MaxValue).ToArray(), n, n);
+            var previous = new int[n, n];
+            for (var i = 0; i < n; i++)
+            {
+                dist[i][i] = 0;
+                previous[i, i] = i;
+            }
+            //init
+            foreach (var e in matrixGraph.Edges)
+            {
+                dist[e.From][e.To] = (int) matrixGraph[e.From, e.To].Data;
+            }
+
+            for (var i = 0; i < n; i++)
+            {
+                for (var j = 0; j < n; j++)
+                {
+                    for (var k = 0; k < n; k++)
+                    {
+                        var c = dist[i][j] + dist[j][k];
+                        if (c < dist[i][k])
+                        {
+                            dist[i][k] = c;
+                            previous[i, k] = j;
+                        }
+                    }
+                }
+            }
+            return (dist, previous);
+        }
+        
         //dfs和回溯是相似的。path其实就是当前路径。遍历某个节点时扔进去，回溯的时候弹出。因为是iddfs要有limit,还要记录目前的cost
         public static (int cost, bool found) IDAStartDFS(MatrixGraph<int> matrixGraph, List<int> path, int g, int limit, int target)
         {
@@ -65,9 +99,8 @@ namespace UTokyo.Structure.Graph
 
             return (min, false);
         }
-
-
-
+        
+        
 
         //多源最短惹。NB，但是O(n^3惹惹惹)
         public static void FloydWarshall(MatrixGraph<int> matrixGraph)
@@ -370,6 +403,11 @@ namespace UTokyo.Structure.Graph
                     set.Add(_nodesList[i]);
             }
             return set;
+        }
+
+        public override System.Collections.Generic.HashSet<GraphNode<TNodeType>> GetExtendNodes(int node)
+        {
+            return GetExtendNodes(this[node]);
         }
     }
     
