@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
+<PropertyGroup>
+   <LangVersion>9</LangVersion>
+</PropertyGroup>  
+<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{73DD4E72-20C2-483B-BD0E-02388751E182}</ProjectGuid>
@@ -44,11 +47,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgorithmP.cs" />
+    <Compile Include="CI\CI2020.cs" />
     <Compile Include="CustomerComparer.cs" />
     <Compile Include="FileSystem\FileSysHelper.cs" />
     <Compile Include="FunctionExt.cs" />
     <Compile Include="Geometry\Point.cs" />
     <Compile Include="Geometry\TransFormUtil.cs" />
+    <Compile Include="ImageProcess\GreyImage.cs" />
     <Compile Include="ImageProcess\Image.cs" />
     <Compile Include="ImageProcess\ImageFilter.cs" />
     <Compile Include="ImageProcess\ImageProcessTest.cs" />

@@ -30,6 +30,36 @@ namespace UTokyo.Math
         }
 
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Vector<T> e)
+            {
+                if (e.Count == Count && e.IsColumnMatrix == IsColumnMatrix)
+                {
+                    for (var i = 0; i < Count; i++)
+                    {
+                        if (!e[i].Equals(this[i]))
+                            return false;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            var s = 0;
+            s += IsColumnMatrix ? 0 : 1;
+            foreach (var x in this)
+            {
+                s += x.GetHashCode();
+            }
+            return s;
+        }
+
         public Vector<T> Normalize()
         {
             Vector<T> v = (Vector<T>) Clone();

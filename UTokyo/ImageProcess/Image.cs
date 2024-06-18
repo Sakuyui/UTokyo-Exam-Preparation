@@ -27,33 +27,6 @@ namespace UTokyo.ImageProcess
         }
     }
 
-    public class GreyImage : Image<double>
-    {
-        private Matrix<double> _data;
-        public Matrix<double> PixelMatrix => _data;
-        public GreyImage(int height, int width) : base(height, width)
-        {
-            _data = new Matrix<double>(height, width);
-        }
-        
-        public Pixel<double> this[int x, int y]
-        {
-            get => new Pixel<double>(x, y, _data[x, y]);
-            set => _data[x, y] = value.Color;
-        }
-
-        public override IEnumerator<Pixel<double>> GetEnumerator()
-        {
-            for (var i = 0; i < Height; i++)
-            {
-                for (var j = 0; j < Width; j++)
-                {
-                    yield return this[i, j];
-                }
-            }
-        }
-    }
-
     public class RgbImage : Image<(double R, double G, double B, double T)>
     {
         private Matrix<double> _r;

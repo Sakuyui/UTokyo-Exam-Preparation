@@ -165,5 +165,32 @@ namespace UTokyo
 
             return ans;
         }
+
+        public static void SetWhere<TSource>(this IEnumerable<TSource> enumerable, Action<TSource> func, Func<TSource, bool> logicJudge)
+        {
+            foreach (var e in enumerable)
+            {
+                if(logicJudge(e))
+                    func(e);
+            }
+        }
+
+        public static int SearchFirstIndex<TSource>(this IEnumerable<TSource> enumerable, TSource element, int start = 0)
+        {
+            return enumerable.ToList().IndexOf(element, start);
+        }
+
+        public static (int, TSource) FindFirst<TSource>(this IEnumerable<TSource> enumerable,
+            Func<TSource,int, bool> judge)
+        {
+            var t = enumerable.ToList();
+            for (var i = 0; i < t.Count; i++)
+            {
+                if (judge(t[i], i))
+                    return (i, t[i]);
+            }
+            return (-1, default);
+        }
+        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UTokyo.Math;
 
 namespace UTokyo.Test
 {
@@ -7,14 +8,12 @@ namespace UTokyo.Test
     {
         public static void Test()
         {
-            var x = 121;
-            string.Compare(x.ToString(), new string(x.ToString().Reverse().ToArray())
-                , StringComparison.Ordinal).PrintToConsole();
-        
-            
+            CI.CI2020.Test();
         }
 
     
+        
+        
          
           
         

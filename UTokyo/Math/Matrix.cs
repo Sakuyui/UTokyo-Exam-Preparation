@@ -195,12 +195,18 @@ namespace UTokyo.Math
                 {
                     tmpList.Add(val);
                 }
+                i.PrintToConsole();
                 list.Add(tmpList);
             }
 
             Datas = list;
         }
 
+
+        public void Fill(int row, int column, int h, int w, int d)
+        {
+            
+        }
         public delegate T ElementProcess(int i, int j, int e);
         public Matrix(int rows, int columns, ElementProcess initAction)
         {
@@ -221,6 +227,8 @@ namespace UTokyo.Math
         }
 
 
+        
+        
         public IEnumerator<List<T>> GetEnumerator()
         {
             return ((IEnumerable<List<T>>) Datas).GetEnumerator();
@@ -251,10 +259,14 @@ namespace UTokyo.Math
             set => Datas[r][c] = value;
         }
 
+        
         public Matrix<T> this[int rowFrom, int rowTo, int columnFrom, int columnTo]
         {
             get
             {
+                
+                var s = "";
+                
                 int rf = rowFrom < 0 ? 0 : rowFrom;
                 int rt = (rowTo < 0 || rowTo >= RowsCount) ? RowsCount - 1 : rowTo;
                 int cf = columnFrom < 0 ? 0 : columnFrom;
@@ -282,11 +294,13 @@ namespace UTokyo.Math
                 }
             }
         }
+        
         //选择某些行以及某些列，索引可重复
         public Matrix<T> this[int[] rowsIndexes, int[] columnsIndexes]
         {
             get
             {
+                
                 List<Vector<T>> vectors = new List<Vector<T>>();
                 for (var i = 0; i < rowsIndexes.Length; i++)
                 {
@@ -301,6 +315,7 @@ namespace UTokyo.Math
 
                 return new Matrix<T>(vectors);
             }
+            
         }
 
 
